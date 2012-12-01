@@ -1,0 +1,912 @@
+﻿/*
+ | Version 10.1.1
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
+/* This file contains the common style settings for "Tax Parcel Viewer" template */
+/* Use this file to perform the following: */
+
+/* 1.  Set the body styles                      - { Style(s) to look for: html, body } */
+/* 2.  Set styles for splash screen             - { Style(s) to look for: divSplashScreenContainer,divSplashScreenDialog,divSplashScreenDialog,divSplashContent,
+                                                                          divSplashContainer,customButton,customButtonInner } */
+/* 3.  Set the styles for Election Result Updates
+                                                - { Style(s) to look for: divResultsUpdateInfo}*/
+/* 4.  Set the styles for animations            - { Style(s) to look for: slideTransition,hideHeaderContainer,showHeaderContainer,hideBottomContainer,showBottomContainer,
+                                                                          hideContainer,showContainer,hideContainerHeight,showContainerHeight,opacityHideAnimation,
+                                                                          opacityShowAnimation,esriLogo}*/
+/* 5.  Set the styles for share container       - { Style(s) to look for: divShareContainer}*/
+/* 6.  Set the styles for application header    - { Style(s) to look for: lblAppName,imgOptions,tableHeader,imgApplication,divApplicationHeader,divLogo}*/
+/* 7.  Set the styles for search container      - { Style(s) to look for: divAddressScrollContainer,divAddressScrollContent,tblHeader,divAddressPlaceHolder,txtAddress,
+                                                                          imgLocate,divAddressList,tdSearchByAddress,tdSearchByPrecinct,tdSearchByUnSelectedPrecinct,
+                                                                          tdSearchByUnSelectedAddress,bottomborder}*/
+/* 8.  Set the styles for bottom panel          - { Style(s) to look for: divBottomPanelHeader,divBottomPanelBody,divTemplateBox,divTemplateHeader,spanHeader,
+                                                                          divContentStyle,divElectionResultsContainer,divElectionContestContainer,
+                                                                          divElectionResultsContent,divElectionContestContent,divElectionContestContent,
+                                                                          divElectionResultsView,border}*/
+/* 9.  Set the styles for info window           - { Style(s) to look for: divInfoWindowContainer,divTriangle,dj_ie .divInfoWindowContainer,
+                                                                          divInfoWindowContainer .container,imgInfoWindow,divInfoWindowContainer .content,
+                                                                          divInfoWindowContainer .title,imgArrow}*/
+/* 10. Set the styles for esri slider           - { Style(s) to look for: esriSimpleSlider}*/
+/* 11. Set the styles for loading indicator     - { Style(s) to look for: divLoadingIndicator}*/
+/* 12. Set styles for tab container             - { Style(s) to look for: mblTabBarButtonIcon,mblTabPanelHeader,mblTabButton:first-childmblTabButton:last-                                                                                              child,mblTabPanelHeader .mblTabButton.mblTabButtonSelected,mblTabButtonSelected,mblTabButton}*/
+/* 13. Set styles for side panel                - { Style(s) to look for: divSidePanel,divDataContainer,divEmptySpace,tableHeader}*/
+/* 14. Set styles for forms                     - { Style(s) to look for: divDropDownContainer,txtSelectedRequest, .txtSelectedLayout,divRequestTypes,
+                                                                          imgDropdownCarot,tdWordBreak,tooltip,a:link,a:visited}*/
+/* 13. Set styles for chart container           - { Style(s) to look for: divChartContent}*/
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Styles for body*/
+
+html, body
+{
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    font-family: Verdana !important;
+    overflow: hidden;
+    color: White;
+    font-size: 11px;
+    visibility: visible !important;
+}
+
+[type=text]
+{
+    font-family: Verdana;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Styles for splash screen*/
+
+.divSplashScreenContainer
+{
+    top: 0px;
+    left: 0px;
+    background: rgba(0,0,0,0.65);
+    -pie-background: rgba(0,0,0,0.65);
+    behavior: url("styles/PIE.htc");
+    position: absolute;
+    z-index: 100001;
+    width: 100%;
+    height: 100%;
+}
+
+.divSplashScreenDialogContent
+{
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 10px #fff;
+    -moz-box-shadow: 0 0 10px #fff;
+    -o-box-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 10px #fff;
+    behavior: url("styles/PIE.htc");
+}
+
+.divSplashScreenDialog
+{
+    text-align: left;
+    z-index: 1000;
+    background-color: black;
+}
+
+.divSplashContent
+{
+    padding-left: 10px;
+    overflow: hidden;
+    width: 90%;
+}
+
+.divSplashContainer
+{
+    overflow: hidden;
+    position: relative;
+}
+
+.customButton
+{
+    border: none;
+    color: #fff;
+    height: 25px;
+    cursor: pointer;
+    background: -webkit-gradient(linear, left top, left bottom, from(#888), to(#575757)) !important;
+    background: -moz-linear-gradient(top, #888, #575757) !important;
+    background: -o-linear-gradient(#888, #575757) !important;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.customButtonInner
+{
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#888888', endColorstr='#575757'); /*For IE7-8-9*/
+    width: 100%;
+    height: 100%;
+}
+
+.roundedCorner
+{
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    behavior: url("styles/PIE.htc");
+}
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for the basemap container*/
+
+.basemapLabel
+{
+    background-color: transparent;
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    display: block;
+}
+
+.selectedBaseMap
+{
+    -webkit-box-shadow: 0 0 15px #FFE771;
+    -moz-box-shadow: 0 0 15px #FFE771;
+    box-shadow: 0 0 15px #FFE771;
+    behavior: url("styles/PIE.htc");
+}
+
+.baseMapContainerNode
+{
+    float: left;
+    margin: 4px 10px 2px 13px;
+    width: 100px;
+}
+
+.divLayerContainer
+{
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 260px;
+    z-index: 1000;
+    background-color: transparent;
+}
+
+.divLayerContentHolder
+{
+    background: rgba(0,0,0,0.9);
+    -pie-background: rgba(0,0,0,0.9);
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    behavior: url("styles/PIE.htc");
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for animations */
+
+.slideTransition
+{
+    -webkit-transition: left 0.5s ease-in;
+    -moz-transition: left 0.5s ease-in;
+    -o-transition: left 0.5s ease-in;
+    transition: left 0.5s ease-in;
+}
+
+.hideHeaderContainer
+{
+    overflow: hidden;
+    -webkit-transition: bottom 0.5s ease-in;
+    -moz-transition: bottom 0.5s ease-in;
+    -o-transition: bottom 0.5s ease-in;
+    bottom: 0px;
+    height: 0px;
+}
+
+.showHeaderContainer
+{
+    overflow: hidden;
+    -webkit-transition: bottom 0.5s ease-in;
+    -moz-transition: bottom 0.5s ease-in;
+    -o-transition: bottom 0.5s ease-in;
+    bottom: 100%;
+}
+
+.hideBottomContainer
+{
+    overflow: hidden;
+    -webkit-transition: height 0.5s ease-in;
+    -moz-transition: height 0.5s ease-in;
+    -o-transition: height 0.5s ease-in;
+    height: 0px;
+}
+
+.showBottomContainer
+{
+    overflow: hidden;
+    -webkit-transition: height 0.5s ease-in;
+    -moz-transition: height 0.5s ease-in;
+    -o-transition: height 0.5s ease-in;
+    height: 250px;
+}
+
+.hideContainer
+{
+    -webkit-transition: All 0.5s ease-in;
+    -moz-transition: All 0.5s ease-in;
+    -o-transition: All 0.5s ease-in;
+    transition: All 0.5s ease-in;
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -o-transform: scale(0);
+    transform: scale(0);
+}
+
+.showContainer
+{
+    -webkit-transition: All 0.5s ease-in;
+    -moz-transition: All 0.5s ease-in;
+    -o-transition: All 0.5s ease-in;
+    transition: All 0.5s ease-in;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1);
+}
+
+.hideContainerHeight
+{
+    overflow: hidden;
+    -webkit-transition: height 0.5s ease-in;
+    -moz-transition: height 0.5s ease-in;
+    -o-transition: height 0.5s ease-in;
+    height: 0px;
+}
+
+.showContainerHeight
+{
+    overflow: hidden;
+    -webkit-transition: height 0.5s ease-in;
+    -moz-transition: height 0.5s ease-in;
+    -o-transition: height 0.5s ease-in;
+    height: 100%;
+}
+
+.opacityHideAnimation
+{
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: visibility 0s linear 0.5s, opacity 0.5s ease-in;
+    -moz-transition: visibility 0s linear 0.5s, opacity 0.5s ease-in;
+    -o-transition: visibility 0s linear 0.5s, opacity 0.5s ease-in;
+}
+
+.opacityShowAnimation
+{
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition: opacity 0.5s ease-in;
+    -moz-transition: opacity 0.5s ease-in;
+    -o-transition: opacity 0.5s ease-in;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for custom scrollbar */
+
+.scrollbar_track
+{
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    background-color: transparent;
+    cursor: default;
+    display: block;
+    padding: 2px 2px 2px 2px;
+}
+
+.scrollbar_handle
+{
+    background-color: gray;
+    position: relative;
+    width: 8px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    opacity: 0.9;
+    -moz-opacity: 0.9;
+    cursor: default;
+    behavior: url("styles/PIE.htc");
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for share container*/
+
+.divShareContainer
+{
+    position: absolute;
+    z-index: 1000;
+    top: 60px;
+    right: 70px;
+    background-color: transparent;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for application header */
+
+.lblAppName
+{
+    padding-left: 70px;
+}
+
+.imgOptions
+{
+    height: 30px !important;
+    width: 30px !important;
+    vertical-align: middle;
+}
+
+.tableHeader
+{
+    width: 100%;
+    height: 100%;
+}
+
+.imgApplication
+{
+    width: 57px;
+}
+
+.divApplicationHeader
+{
+    vertical-align: middle;
+    background: rgba(0,0,0,0.9);
+    -pie-background: rgba(0,0,0,0.9);
+    top: 0px;
+    height: 55px;
+    width: 100%;
+    position: absolute;
+    z-index: 1000;
+    overflow: hidden;
+    font-size: 24px;
+    behavior: url("styles/PIE.htc");
+}
+
+.divLogo
+{
+    position: absolute !important;
+    top: 0px;
+    left: 0px;
+    width: 75px;
+    height: 75px;
+    z-index: 10000;
+    display: none;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for search container*/
+
+.gpsIcon
+{
+    width: 30px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.divAddressScrollContainer
+{
+    overflow: hidden;
+    position: relative;
+}
+
+.divAddressScrollContent
+{
+    overflow: hidden;
+    position: relative;
+    width: 95%;
+}
+
+.tblHeader
+{
+    background-color: #393939;
+    -moz-border-radius-topleft: 10px;
+    -moz-border-radius-topright: 10px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -webkit-border-top-left-radius: 10px;
+    -webkit-border-top-right-radius: 10px;
+    -webkit-border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom: gray 1px solid;
+    behavior: url("styles/PIE.htc");
+}
+.tblSearchHeader
+{
+    width: 96%;
+}
+
+.divAddressPlaceHolder
+{
+    border: 1px solid #242424;
+    background-color: #333333;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    position: relative;
+    behavior: url("styles/PIE.htc");
+}
+
+.txtAddress
+{
+    vertical-align: middle;
+    background-color: #333333;
+    color: #fff;
+    border: none; /*  height: 25px;*/
+    outline: none;
+    padding: 0px !important;
+}
+
+.imgLocate
+{
+    position: absolute;
+    cursor: pointer;
+    right: 0px;
+    top: 1px;
+}
+
+.divAddressList
+{
+    /*margin-top: 5px;*/
+    color: #fff;
+    z-index: 101;
+    background-color: transparent;
+    border: none;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    width: 99%;
+    behavior: url("styles/PIE.htc");
+}
+
+.bottomborder
+{
+    text-indent: 5px;
+    position: relative;
+    cursor: pointer;
+    border-bottom: 1px solid white;
+}
+
+.tblAddressResults
+{
+    width: 100%;
+}
+
+.textarea
+{
+    font-family: Verdana !important;
+    font-size: 11px;
+    border: 1px solid #242424;
+    background-color: #333333;
+    height: 80px;
+    overflow: auto;
+    resize: none;
+    color: White;
+    width: 95%;
+}
+
+.text
+{
+    border: 1px solid #242424;
+    background-color: #333333;
+    color: White;
+    border-radius: 3px;
+    width: 255px;
+    padding: 0px !important;
+    height: 25px;
+    line-height: 25px;
+}
+
+.tdInfoHeader
+{
+    font-weight: bold;
+    color: White;
+}
+
+.tdHeading
+{
+    font-weight: bold;
+    color: White;
+}
+
+.trAddressGray
+{
+    background-color: gray;
+    height: 25px;
+    text-indent: 5px;
+    cursor: pointer;
+}
+
+.trAddress
+{
+    background-color: #504A4B;
+    height: 25px;
+}
+
+#divList, #divFeatureList
+{
+    overflow: hidden;
+}
+
+.btnClose
+{
+    top: 5px;
+    position: absolute;
+    right: 3px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for InfoWindow */
+
+.divInfoWindowContainer
+{
+    z-index: 1000;
+    position: absolute;
+    background-color: #585858;
+    color: #fff;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    behavior: url("styles/PIE.htc");
+}
+
+.divTriangle
+{
+    border: solid 20px transparent;
+    border-top-color: #585858;
+    border-bottom: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    display: block;
+    position: relative;
+    margin: auto;
+    bottom: 0px;
+}
+.imgUpSort
+{
+    border: solid 10px transparent;
+    border-top-color: #ffffff;
+    border-bottom: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    display: block;
+    position: relative;
+    margin: auto;
+    bottom: 0px;
+}
+
+.dj_ie .divInfoWindowContainer
+{
+    border: none;
+}
+
+.divInfoWindowContainer .container
+{
+    position: absolute !important;
+    top: 0;
+    left: 0;
+}
+
+.imgInfoWindow
+{
+    position: relative;
+}
+
+.divInfoWindowContainer .content
+{
+    position: relative;
+    color: #fff;
+    overflow: hidden;
+}
+
+.divInfoWindowContainer .title
+{
+    background-color: #282828;
+    font-size: 13px;
+    font-weight: bold;
+    height: 20px;
+    padding: 7px 2px 2px 7px !important;
+    color: #fff;
+    height: 25px;
+    background-color: #282828;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -webkit-border-bottom-left-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom: gray 1px solid;
+    behavior: url("styles/PIE.htc");
+}
+
+.imgArrow
+{
+    z-index: 1000;
+    position: absolute;
+    cursor: pointer;
+    right: 5px;
+    top: 10px;
+    height: 44px;
+    width: 44px;
+}
+
+.divParcelScrollContent, .divParcelDataScrollContainer
+{
+    overflow: hidden;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for esri slider */
+
+.esriSimpleSlider
+{
+    top: 90px !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Styles for loading indicator*/
+
+.divLoadingIndicator
+{
+    top: 0px;
+    left: 0px;
+    background: rgba(0,0,0,0.65);
+    -pie-background: rgba(0,0,0,0.65);
+    position: absolute;
+    z-index: 100001;
+    width: 100%;
+    height: 100%;
+    behavior: url("styles/PIE.htc");
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Styles for tab container */
+
+.mblTabBarButtonIcon
+{
+    display: none;
+}
+
+.mblTabPanelHeader
+{
+    background: none !important;
+    border-top: none;
+    border-bottom: none;
+    padding: 0px 0px 0px 2px !important;
+    width: 330px;
+    position: inherit;
+    text-shadow: none;
+}
+
+.mblTabButton:first-child
+{
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-left-width: 1px;
+    border-top-left-radius: 5px 5px;
+    border-bottom-left-radius: 5px 5px;
+}
+
+.mblTabButton:last-child
+{
+    -webkit-border-top-right-radius: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomright: 5px;
+    border-right-color: black;
+    border-top-right-radius: 5px 5px;
+    border-bottom-right-radius: 5px 5px;
+}
+
+.mblTabPanelHeader .mblTabButton.mblTabButtonSelected
+{
+    color: #fcd3a5;
+    border: solid 1px #da7c0c;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
+    background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f47a20', endColorstr='#faa51a');
+    height: 26px;
+}
+
+.mblTabButtonSelected
+{
+    cursor: default !important;
+}
+
+.mblTabButton
+{
+    background: #0e0e0e; /* Old browsers */
+    background: -moz-linear-gradient(top, #0e0e0e 0%, #7d7e7d 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0e0e0e), color-stop(100%,#7d7e7d)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #0e0e0e 0%,#7d7e7d 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #0e0e0e 0%,#7d7e7d 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #0e0e0e 0%,#7d7e7d 100%); /* IE10+ */
+    background: linear-gradient(top, #0e0e0e 0%,#7d7e7d 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#7d7e7d',GradientType=0 ); /* IE6-9 */
+    font-family: Verdana !important;
+    border-right-color: #303030 !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Styles for side panel*/
+
+.divSidePanel
+{
+    top: 0px;
+    height: 100%;
+    width: 350px;
+    position: absolute;
+    z-index: 1001;
+    overflow: hidden;
+}
+
+.divDataContainer
+{
+    background-color: #585858;
+    height: 100%;
+    margin-top: 55px;
+}
+
+.divEmptySpace
+{
+    height: 55px;
+    background-color: Red;
+    width: 10px;
+}
+
+.tableHeader
+{
+    width: 100%;
+    height: 100%;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for forms*/
+
+.divDropDownContainer
+{
+    vertical-align: middle;
+    position: relative; /* border: 1px solid white;*/
+    border: 1px solid #242424;
+    background-color: #333333;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    width: 200px; /* height: 20px;*/
+    height: 25px;
+    behavior: url("styles/PIE.htc");
+}
+
+.txtSelectedRequest, .txtSelectedLayout
+{
+    padding: 0px !important;
+    text-indent: 2px;
+    border: 1px solid #242424;
+    background-color: #333333;
+    width: 175px;
+    border: none !important;
+    color: white;
+    height: 23px;
+    line-height: 23px;
+}
+
+.divRequestTypes
+{
+    width: 200px;
+    display: none;
+    position: absolute;
+    z-index: 101;
+    border: 1px solid #242424;
+    background-color: #333333;
+    border-top: 0px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.imgDropdownCarot
+{
+    position: absolute;
+    cursor: pointer;
+    right: 0px;
+    width: 25px;
+    height: 25px;
+}
+
+.tdWordBreak
+{
+    word-break: break-word;
+}
+
+.tooltip
+{
+    background-color: Black !important;
+    color: #fff !important;
+}
+
+a:link
+{
+    color: White !important;
+    text-decoration: underline !important;
+}
+
+a:visited
+{
+    color: White !important;
+    text-decoration: underline !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for chart container*/
+
+.divChartContent
+{
+    width: 200px !important;
+    height: 200px !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+#title
+{
+    height: 30px;
+    width: 85%;
+}
+
+#textTable
+{
+    float: left;
+    border: 1px;
+    border-color: blue;
+}
+
+.table
+{
+    border: 0px solid;
+    border-color: black;
+}

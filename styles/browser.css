@@ -1,0 +1,241 @@
+﻿/*
+ | Version 10.1.1
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
+/* This file contains the browser specific style settings for "Election Results" template */
+/* The common settings for the styles are defined in "electionresults.css" */
+
+/* Use this file to perform the following: */
+
+/* 1.  Set the body styles                      - { Style(s) to look for: html, body }*/
+/* 2.  Set styles for icons                     - { Style(s) to look for: customButton,imgOptions,imgShare,tdHeader, .tdHeaderMobile,headericon}*/
+/* 3.  Set the styles for search container      - { Style(s) to look for: divAddressContent,divAddressPlaceHolder,divAddressResultContainer,imgLocate,txtBox,
+                                                                         .txtAddress,divAddressList,.txtSelectedRequest, .txtSelectedLayout,text,trRowHeight,}*/
+/* 4.  Set the styles for info window           - { Style(s) to look for: divItemsContainer,divItemsContent,divParcelDataScrollContainer,divFeatureDataScrollbarContainer,
+                                                                          divBroadbandContainer, #divNeighborhoodContainer,divParcelScrollContent, #divNeighborhoodContent,
+                                                                          #divBroadbandContent,divFeatureDataScrollbarContent,scrollbar_footer}*/
+/* 5.  Set the styles for tab container          - { Style(s) to look for: mblTabButton}*/
+/* 6.  Set the styles for basemap                - { Style(s) to look for: basemapThumbnail}*/
+/* 7.  Set the styles for esri slider            - { Style(s) to look for: esriSimpleSlider}*/
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Styles for body*/
+
+html, body
+{
+    font-size: 11px !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for icons*/
+
+.customButton
+{
+    height: 25px !important;
+}
+
+.imgOptions
+{
+    height: 30px !important;
+    width: 30px !important;
+    vertical-align: middle;
+    padding: 0px 5px 0px 0px;
+    cursor: pointer;
+}
+
+.imgShare
+{
+    height: 30px !important;
+    width: 30px !important;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+
+
+.tdHeader, .tdHeaderMobile
+{
+    width: 50px;
+    font-weight: bolder;
+}
+
+.headericon
+{
+    width: 30px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for search container*/
+
+.divAddressContent
+{
+    position: absolute;
+    background-color: #585858;
+    top: 120px;
+    right: 5px;
+    width: 295px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+}
+
+.divAddressPlaceHolder
+{
+    width: 275px;
+    height: 32px;
+}
+
+.divAddressResultContainer
+{
+    margin-top: 5px;
+    margin-left: 8px;
+}
+
+.imgLocate
+{
+    height: 30px !important;
+    width: 30px !important;
+}
+
+.txtBox, .txtAddress
+{
+    font-size: 12px;
+    height: 30px;
+    line-height: 30px;
+    background-color: transparent;
+    width: 222px;
+}
+
+.divAddressList
+{
+    width: 98%;
+}
+
+.txtSelectedRequest, .txtSelectedLayout
+{
+    font-size: 12px;
+}
+.text
+{
+    font-size: 12px;
+}
+.trRowHeight
+{
+    height: 20px;
+}
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for infowindow */
+
+#divItemsContainer
+{
+    height: 200px;
+    position: relative;
+    width: 325px;
+}
+#divItemsContent
+{
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    width: 325px;
+}
+#divParcelDataScrollContainer
+{
+    height: 192px;
+    position: relative;
+    width: 325px;
+}
+#divFeatureDataScrollbarContainer
+{
+    height: 222px;
+    position: relative;
+    width: 325px;
+    overflow: hidden;
+}
+#divBroadbandContainer, #divNeighborhoodContainer
+{
+    height: 192px;
+    position: relative;
+    width: 325px;
+}
+
+
+#divParcelScrollContent, #divNeighborhoodContent, #divBroadbandContent
+{
+    height: 192px;
+    position: relative;
+    width: 325px;
+    overflow: hidden;
+}
+#divFeatureDataScrollbarContent
+{
+    height: 222px;
+    position: relative;
+    width: 325px;
+    overflow: hidden;
+}
+
+.scrollbar_footer
+{
+    position: absolute;
+    top: 255px;
+    right: 2px;
+}
+
+.tdParcelDisplayText
+{
+    width: 40%;
+}
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for the tab container*/
+
+.mblTabButton
+{
+    /*width: 95px;*/
+    width: 105px; /*  min-width: 95px;*/
+    min-width: 80px;
+    max-width: 195px;
+    border-top-style: none;
+    border-bottom-style: none; /*background-color: #9CACC0;*/
+    color: #fef4e9; /* border: solid 1px black;     border-color: transparent;*/
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+.basemapThumbnail
+{
+    border: 1px solid #fff;
+    margin: 1px;
+    width: 102px;
+    cursor: pointer;
+    height: 67px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for esri slider*/
+
+.esriSimpleSlider
+{
+    left: 360px !important;
+    top: 70px !important;
+}

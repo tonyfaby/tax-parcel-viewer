@@ -1,0 +1,282 @@
+﻿/*
+ | Version 10.1.1
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
+/* This file contains the mobile specific style settings for "Tax Parcel Viewer" template */
+/* The common settings for the styles are defined in "taxParcel.css" */
+
+/* Use this file to perform the following: */
+
+/* 1.  Set the body styles                      - { Style(s) to look for: html, body, .textarea } */
+/* 2.  Set styles for icons, buttons and header styles
+                                                - { Style(s) to look for: customButton,tableHeader,tdHeader,imgOptions, .imgShare,gpsIcon}*/
+/* 3.  Set the styles for search container      - { Style(s) to look for: divAddressContainer,divAddressContent,divAddressPlaceHolder,divAddressResultContainertxtBox,
+                                                                          txtAddress,imgLocate,tblAddressResults,tdHeaderMobile,trRowHeight,
+                                                                          divAddressScrollContent,divAddressList}*/
+/* 4.  Set styles for infoWindow                - { Style(s) to look for: divParcelInformation,divFeatureInformation,divParcelInfoWindow,divFeatureInfoWindow,
+                                                                          divParcelDataScrollContainer,divFeatureDataScrollbarContainer,divNeighborhoodContainer,
+                                                                          divBroadbandContainer,divParcelScrollContent,divNeighborhoodContent,divBroadbandContent,
+                                                                          divFeatureDataScrollbarContent,divInfoWindowContainer .content}/*
+/* 5.  Set the styles for tab container         - { Style(s) to look for: mblTabButton,mblTabPanelHeader .mblTabButton.mblTabButtonSelected}*/
+/* 6.  Set the styles for esri slider           - { Style(s) to look for: esriSimpleSlider}*/
+/* 7.  Set the styles for basemap               - { Style(s) to look for: basemapThumbnail,divLayerContainer}*/
+/* 8.  Set the styles for share container       - { Style(s) to look for: divShareContainer}*/
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/* Styles for body*/
+
+html, body, .textarea
+{
+    font-size: 15px !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for icons, buttons and header styles*/
+
+.customButton
+{
+    height: 35px !important;
+}
+
+.tableHeader
+{
+    width: 100%;
+}
+
+.tdHeader
+{
+    width: 65px;
+    font-weight: bolder;
+}
+
+.imgOptions, .imgShare
+{
+    height: 44px !important;
+    width: 44px !important;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.gpsIcon
+{
+    width: 44px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for search container*/
+
+.divAddressContainer
+{
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0,0,0,.65);
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    z-index: 1001 !important;
+}
+
+.divAddressContent
+{
+    z-index: 1001;
+    background-color: #585858;
+    width: 100%;
+    height: 100%;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 10px #fff;
+    -moz-box-shadow: 0 0 10px #fff;
+    -o-box-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 10px #fff;
+}
+
+.divAddressPlaceHolder
+{
+    height: 46px;
+    width: 100%;
+}
+
+.divAddressResultContainer
+{
+    margin: 5px -7px 0px 10px;
+}
+
+.txtBox, .txtAddress
+{
+    font-size: 15px !important;
+    height: 44px !important;
+    width: 70%;
+    padding: 0px !important;
+}
+
+.imgLocate
+{
+    height: 44px !important;
+    width: 44px !important;
+}
+
+.tblSearchHeader
+{
+    width: 100%;
+}
+
+.tblAddressResults
+{
+    width: 98%;
+}
+
+.tdHeaderMobile
+{
+    display: none;
+}
+
+.trRowHeight
+{
+    height: 40px;
+}
+
+.divAddressScrollContent
+{
+    width: 100%;
+}
+
+.divAddressList
+{
+    width: 100%;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for infoWindow*/
+
+.divParcelInformation, .divFeatureInformation
+{
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0,0,0,.65);
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    z-index: 1001 !important;
+}
+
+.divParcelInfoWindow, .divFeatureInfoWindow
+{
+    z-index: 1001;
+    background-color: #585858;
+    width: 100%;
+    height: 100%;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 10px #fff;
+    -moz-box-shadow: 0 0 10px #fff;
+    -o-box-shadow: 0 0 10px #fff;
+    box-shadow: 0 0 10px #fff;
+}
+
+.divParcelDataScrollContainer, .divFeatureDataScrollbarContainer, .divNeighborhoodContainer, .divBroadbandContainer
+{
+    height: 90%;
+    position: relative;
+}
+
+.divParcelScrollContent, .divNeighborhoodContent, .divBroadbandContent, .divFeatureDataScrollbarContent
+{
+    height: 95%;
+    position: relative;
+    overflow: hidden;
+}
+
+.divInfoWindowContainer .content
+{
+    color: #fff;
+    overflow: auto;
+    padding: 3px 0px 0px 5px !important;
+}
+
+.tdParcelDisplayText
+{
+    width: 40%;
+}
+
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for tab container*/
+
+.mblTabButton
+{
+    border-top-style: none;
+    border-bottom-style: none;
+    height: 30px;
+    padding: 0px 0px 0px 4px !important;
+}
+
+.mblTabPanelHeader .mblTabButton.mblTabButtonSelected
+{
+    height: 28px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for esri slider*/
+
+.esriSimpleSlider
+{
+    top: 70px !important;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for basemap*/
+
+.basemapThumbnail
+{
+    border: 1px solid #fff;
+    margin: 1px;
+    width: 75px;
+    cursor: pointer;
+    height: 50px;
+}
+
+/*.divLayerContainer
+{
+    right: 15px;
+    width: 180px;
+}*/
+.divLayerContainer
+{
+    right: 15px;
+    width: 210px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/*Styles for share container*/
+
+.divShareContainer
+{
+    right: 15px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
