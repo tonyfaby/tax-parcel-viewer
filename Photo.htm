@@ -128,14 +128,22 @@
 
             //--- delete these lines on your site--they just override the path above
             //--- for demoing by using a set of 10 photos for all parcel ids
-            //--- (assumes that all parcel ids end with a digit)
+            //--- (assumes that all parcel ids begin with a number)
             var iPhoto = parseFloat(queryObject.ParcelId);
             iPhoto = Math.round(iPhoto - (10 * Math.floor(iPhoto/10)));
             urlToPhoto = "PropertyPhotographs/" + iPhoto + ".jpg";
             //--- end of delete
 
             // Assign the URL to the image placeholder
-            dojo.byId("housePhoto").src = urlToPhoto;
+            dojo.create("img", {
+                src: urlToPhoto,
+                title: "photo of house",
+                alt: "photo of house",
+                style: {
+                    padding: "5px",
+                    maxWidth: "100%"
+                }
+            }, "housePhoto");
         }
         dojo.addOnLoad(start);
     </script>
@@ -184,6 +192,6 @@
             </td>
         </tr>
     </table>
-    <img id="housePhoto" alt="photo of house" style="padding:5px;max-width:100%" />
+    <div id="housePhoto"></div>
 </body>
 </html>
