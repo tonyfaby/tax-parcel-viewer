@@ -124,7 +124,7 @@ dojo.declare("js.config", null, {
     FeedbackLayer:
           {
               Key: "feedbackLayer",
-              ServiceUrl: "http://localgovtemplates.esri.com/ArcGIS/rest/services/ParcelMarkups/FeatureServer/0"
+              ServiceUrl: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/ParcelMarkupsTryitLive/FeatureServer/0"
 
           },
 
