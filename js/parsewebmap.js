@@ -14,6 +14,7 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
+ //Fetch webmap data from respective webmap ID
 function GetWebMapInfo(webmapUniqueKey, webmapId) {
     var webmapDataURL = "http://www.arcgis.com/sharing/content/items/${0}/data?f=json";
     var webmapBaseURL = "http://www.arcgis.com/sharing/content/items/${0}?f=json";

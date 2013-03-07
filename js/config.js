@@ -1,19 +1,19 @@
-/** @license
- | Version 10.1.1
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
+﻿/** @license
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
 dojo.provide("js.config");
 dojo.declare("js.config", null, {
 
@@ -87,14 +87,14 @@ dojo.declare("js.config", null, {
                        Key: "parcelMap",
                        ThumbnailSource: "images/Parcel map.png",
                        Name: "Parcel Map",
-                       MapURL: "http://localgovtemplates.esri.com/ArcGIS/rest/services/ParcelPublicAccessforBloomfield/MapServer",
+                       MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/ParcelPublicAccessMI/MapServer",
                        useForMobileDevice: true
                    },
                    {
                        Key: "taxMap",
                        ThumbnailSource: "images/Tax map.png",
                        Name: "Tax Map",
-                       MapURL: "http://localgovtemplates.esri.com/ArcGIS/rest/services/ParcelIndustry/MapServer"
+                       MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/TaxParcelMI/MapServer"
                    },
                    {
                        Key: "imageryMap",
@@ -111,7 +111,6 @@ dojo.declare("js.config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
     // OPERATIONAL DATA SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
-
 
     // specify WebMapID within quotes
     WebMapId: "4778fee6371d4e83a22786029f30c7e1",
@@ -130,7 +129,7 @@ dojo.declare("js.config", null, {
 
     // Key is used as an layerId while adding this layer to the map and has to be unique
     // Title is used for the text to be displayed
-    // ServiceUrl is the REST end point for the reference overlay layer
+    // ServiceUrl is the REST end point for the layer
 
     BroadBandService:
 		       [
@@ -158,7 +157,7 @@ dojo.declare("js.config", null, {
     LocatorDefaultAddress: "4014 Overlea Ct",
 
     //Set the image for geolocated point
-    GeolocatedImage: "images/pushPin.png",
+    GeolocatedImage: "images/RedPushPin.png",
 
     // ------------------------------------------------------------------------------------------------------------------------
     // GEOMETRY SERVICE SETTINGS
@@ -170,10 +169,10 @@ dojo.declare("js.config", null, {
     // GEOPROCESSING SERVICE SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set report geoprocessing service URL
-    ReportGPServiceURL: "http://50.18.106.114/ArcGIS/rest/services/TaxParcelReports/GPServer/ExporttoPDF",
+    ReportGPServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/TaxParcelReports/GPServer/TaxParcelReports_Script",
 
     //Set URL for the print task
-    PrintTaskURL: "http://yourserver/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task/execute",
+    PrintTaskURL: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task/execute",
 
     // ------------------------------------------------------------------------------------------------------------------------
     // INFO-WINDOW SETTINGS
@@ -185,7 +184,7 @@ dojo.declare("js.config", null, {
 
     // ------------------------------------------------------------------------------------------------------------------------
     // Specify the attribute for parcel ID
-    ParcelIdAttribute: "PARCELID",
+    ParcelIdAttribute: "${PARCELID}",
 
     // ------------------------------------------------------------------------------------------------------------------------
 
@@ -209,7 +208,7 @@ dojo.declare("js.config", null, {
                 {
                     Key: "foreClosure",
                     Title: "Foreclosures",
-                    ServiceURL: "http://localgovtemplates.esri.com/ArcGIS/rest/services/AssessmentOperations/MapServer/0",
+                    ServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/AssessmentOperations/MapServer/0",
                     isVisible: false,
                     isDynamicMapService: true,
                     Fields:
@@ -262,7 +261,7 @@ dojo.declare("js.config", null, {
       {
           Key: "parcelSale",
           Title: "Sales",
-          ServiceURL: "http://localgovtemplates.esri.com/ArcGIS/rest/services/AssessmentOperations/MapServer/1",
+          ServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/AssessmentOperations/MapServer/1",
           isVisible: false,
           isDynamicMapService: true,
           Fields:
@@ -333,7 +332,7 @@ dojo.declare("js.config", null, {
       },
       {
           Key: "taxParcelLayer",
-          ServiceURL: "http://localgovtemplates.esri.com/ArcGIS/rest/services/TaxParcelQuery/MapServer/0",
+          ServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/TaxParcelQuery/MapServer/0",
           OutFields: "PARCELID, SITEADDRESS, CNVYNAME",
           ParcelQuery: "UPPER(PARCELID) LIKE '%${0}%' OR UPPER(SITEADDRESS) LIKE '%${0}%' OR UPPER(CNVYNAME) LIKE '%${0}%'",
           LocateParcelQuery: "PARCELID = '${0}'",
@@ -405,7 +404,6 @@ dojo.declare("js.config", null, {
                         FieldName: "${TOTCNTTXOD}",
                         DataType: "double"
                     }
-
               ]
       }
           ],
@@ -489,6 +487,10 @@ dojo.declare("js.config", null, {
     SelectedAddressColor: "#FF6600",
 
     // ------------------------------------------------------------------------------------------------------------------------
+    //Set configuration item to allow users to turn the "Parcel Markups" off and on.
+    ParcelMarkups:true,
+
+    // ------------------------------------------------------------------------------------------------------------------------
     //SETTING FOR REPORT LAYOUTS
     // ------------------------------------------------------------------------------------------------------------------------
     //Set data to be displayed for layouts for reports
@@ -512,7 +514,6 @@ dojo.declare("js.config", null, {
           {
               TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
               TinyURLResponseAttribute: "data.url",
-
               FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Tax%20Viewer%20Map",
               TwitterShareURL: "http://twitter.com/home/?status=Tax%20Viewer%20Map ${0}",
               ShareByMailLink: "mailto:%20?subject=Tax%20Viewer%20Map&body=${0}"

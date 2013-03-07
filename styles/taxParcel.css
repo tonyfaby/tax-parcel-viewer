@@ -910,3 +910,10 @@ a:visited
     border: 0px solid;
     border-color: black;
 }
+
+.imgSearchLoader
+{
+    vertical-align: middle;
+    display: none;
+    cursor: default;
+}

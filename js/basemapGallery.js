@@ -14,7 +14,7 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
-
+//Create basemap components
 function CreateBaseMapComponent() {
     if (!isMobileDevice) {
         for (var i = 0; i < baseMapLayers.length; i++) {
@@ -49,7 +49,7 @@ function CreateBaseMapComponent() {
     }
 }
 
-//function to create base map element
+//Create basemap images with respective titles
 function CreateBaseMapElement(baseMapLayerInfo) {
     var divContainer = document.createElement("div");
     divContainer.className = "baseMapContainerNode";
@@ -73,7 +73,7 @@ function CreateBaseMapElement(baseMapLayerInfo) {
     return divContainer;
 }
 
-
+//Toggle basemap layer
 function ChangeBaseMap(spanControl) {
     HideMapLayers();
     var key = spanControl.getAttribute('layerId');
@@ -89,6 +89,7 @@ function ChangeBaseMap(spanControl) {
     }
 }
 
+//Create basemap layer on the map
 function CreateBaseMapLayer(layerURL, layerId, isVisible) {
     if (isVisible) {
         currentBaseMap = layerId;
@@ -97,6 +98,7 @@ function CreateBaseMapLayer(layerURL, layerId, isVisible) {
     return layer;
 }
 
+//Hide layers
 function HideMapLayers() {
     for (var i = 0; i < baseMapLayers.length; i++) {
         var layer = map.getLayer(baseMapLayers[i].Key);

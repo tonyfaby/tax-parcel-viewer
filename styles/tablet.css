@@ -86,6 +86,7 @@ html, body, .textarea
 .divApplicationHeader
 {
     z-index: 10001;
+    height: 60px !important;
 }
 /*--------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -136,6 +137,11 @@ html, body, .textarea
 .trRowHeight
 {
     height: 20px;
+}
+
+.text
+{
+font-size:14px !important;    
 }
 
 /*Styles for infowindow*/

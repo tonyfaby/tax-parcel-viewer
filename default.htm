@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset=utf-8>
+    <meta charset="utf-8">
     <!--
      | Version 10.1.1
      | Copyright 2012 Esri
@@ -21,20 +21,23 @@
     <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Tax Parcel Viewer</title>
     <link rel="shortcut icon" href="images/taxparcel.ico" />
-    <link id="stylesheet" href='http://serverapi.arcgisonline.com/jsapi/arcgis/2.8/js/dojo/dojox/mobile/themes/iPhone/iPhone.css'
+    <link id="stylesheet" href='http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dojox/mobile/themes/iPhone/iPhone.css'
         rel='stylesheet' />
     <link href="styles/taxParcel.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" />
     <link rel="Stylesheet" id="dynamicStyleSheet" />
     <link rel="apple-touch-icon" href="images/taxparcel.png" />
     <script type="text/javascript">
-        djConfig = {
+     var dojoConfig = {
+            async: false,
             parseOnLoad: true,
             mblHideAddressBar: false,
-            baseUrl: "./",
-            modulePaths: { "js": "js" }
-        }
+            packages:[
+                {name:"js",location:location.pathname.replace(/\/[^/]+$/, '') + '/js'}
+            ]
+        };
     </script>
-    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.8compact">
+    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2compact">
     </script>
     <script src="js/modernizr-2.5.3.js" type="text/javascript"></script>
     <script src="js/infoWindow.js" type="text/javascript"></script>
@@ -42,391 +45,7 @@
     <script src="js/utils.js" type="text/javascript"></script>
     <script src="js/locator.js" type="text/javascript"></script>
     <script src="js/parsewebmap.js" type="text/javascript"></script>
-    <script type="text/javascript">
-
-        dojo.require("esri.map");
-        dojo.require("mobile.InfoWindow");
-        dojo.require("esri.tasks.geometry");
-        dojo.require("esri.tasks.query");
-        dojo.require("dojox.mobile.parser");
-        dojo.require("dojox.mobile");
-        dojo.require("esri.tasks.locator");
-        dojo.require("dojo.string");
-        dojo.require("dojo.date.locale");
-        dojo.require("esri.tasks.find");
-        dojo.require("esri.layers.FeatureLayer");
-        dojo.require("dojox.mobile.TabBar");
-        dojo.require("esri.toolbars.draw");
-        dojo.require('dojox.charting.Chart2D');
-        dojo.require('dojox.charting.widget.Chart2D');
-        dojo.require('dojox.charting.Chart');
-        dojo.require("esri.tasks.gp");
-        dojo.require("js.config");
-        dojo.require("dojo.number");
-        dojo.require("js.date");
-        dojo.require("esri.dijit.Print");
-
-        var map;
-        var tempLayerId = "tempLayerID";
-        var tempParcelLayerId = "tempParcelLayerID"
-        var defaultSymbol;
-        var isMobileDevice = false;
-        var layersCounter = 0; //variable to store counter for layers
-        var locator;                // Locator service
-        var mapPoint;
-        var isiOS = false;
-        var isBrowser = false;
-        var isTablet = false;
-        var selectedMapPoint;
-        var selectedGraphic;
-        var tb, mapOnClickConnection, drawTool, feedbackLayer, feedbackItem, inSubmitRetry;
-        var polygonFillSymbol;
-        var neighbourhoodInformationURL;
-        var neighbourHoodLayerInfo;
-        var currentBaseMap;
-        var pdfData = {};
-        var mapScale;
-        var reportGPService;
-        var propertyReportPrice;
-        var propertyMapPrice;
-        var webMapId;
-        var feedbackAttributes;
-        var datePattern;
-        var infoWindowHeader;
-        var downloadSpeed;
-        var broadBandService;
-        var feedbackLayer;
-        var layers;
-        var currency;
-        var paypalcurrency;
-        var baseMapLayers;
-        var mapSharingOptions;
-        var infoWindowContent;
-        var draw = false;
-        var selectedParcel;
-        var selectedFeature;
-        var parcelAttributeID;
-        var showNullValueAs;
-        var selectedAddressColor;
-        var taxParcelId;
-        var tabHandle;
-        var geolocatedImage;
-        var printTaskURL;
-
-
-        function init() {
-
-            window.onkeydown = function (e) {
-                return !((e.keyCode == 9) || (e.keyCode == 13));
-            };
-
-            if (!Modernizr.geolocation) {
-                dojo.byId("tdGPS").style.display = "none";
-            }
-
-            dojo.xhrGet({
-                url: "errorMessages.xml",
-                handleAs: "xml",
-                preventCache: true,
-                load: function (xmlResponse) {
-                    messages = xmlResponse;
-                }
-            });
-
-
-            esriConfig.defaults.io.proxyUrl = "proxy.ashx";        //Setting to use proxy file
-            esriConfig.defaults.io.alwaysUseProxy = false;
-            esriConfig.defaults.io.timeout = 180000;    //ersi request timeout value
-            esriConfig.defaults.io.postLength = 512;
-
-            var responseObject = new js.config();
-
-            propertyReportPrice = responseObject.PropertyReportPrice;
-            propertyMapPrice = responseObject.PropertyMapPrice;
-            webMapId = responseObject.WebMapId;
-            feedbackAttributes = responseObject.FeedbackAttributes;
-            datePattern = responseObject.DatePattern;
-            infoWindowHeader = responseObject.InfoWindowHeader;
-            infoWindowContent = responseObject.InfoWindowContent;
-            downloadSpeed = responseObject.DownloadSpeed;
-            broadBandService = responseObject.BroadBandService;
-            feedbackLayer = responseObject.FeedbackLayer;
-            layers = responseObject.Layers;
-            currency = responseObject.Currency;
-            paypalcurrency = responseObject.PayPalCurrencyCode;
-            baseMapLayers = responseObject.BaseMapLayers;
-            mapSharingOptions = responseObject.MapSharingOptions;
-            parcelAttributeID = responseObject.ParcelIdAttribute;
-            showNullValueAs = responseObject.ShowNullValueAs;
-            selectedAddressColor = responseObject.SelectedAddressColor;
-            taxParcelId = responseObject.TaxParcelId;
-            dojo.byId("taxParcelIdMap").innerHTML = taxParcelId;
-            dojo.byId("TaxParcelIdReport").innerHTML = taxParcelId;
-            geolocatedImage = responseObject.GeolocatedImage;
-            printTaskURL = responseObject.PrintTaskURL;
-
-            if (propertyReportPrice == 0 && propertyMapPrice == 0) {
-                dojo.byId('tcShoppingCartContainer').style.display = 'none';
-                dojo.byId("divShareContainer").style.right = "20px";
-            }
-
-            var userAgent = window.navigator.userAgent;
-
-            if (userAgent.indexOf("iPhone") >= 0 || userAgent.indexOf("iPad") >= 0) {
-                isiOS = true;
-            }
-
-            if (userAgent.indexOf("Android") >= 0 || userAgent.indexOf("iPhone") >= 0) {
-                isMobileDevice = true;
-                dojo.byId('dynamicStyleSheet').href = "styles/mobile.css";
-                dojo.byId('divSplashContent').style.fontSize = "15px";
-            }
-            else if (userAgent.indexOf("iPad") >= 0) {
-                isTablet = true;
-                dojo.byId('dynamicStyleSheet').href = "styles/tablet.css";
-                dojo.byId('divSplashContent').style.fontSize = "14px";
-            }
-            else {
-                isBrowser = true;
-                dojo.byId('dynamicStyleSheet').href = "styles/browser.css";
-                dojo.byId('divSplashContent').style.fontSize = "11px";
-            }
-
-            if (isMobileDevice) {
-                dojo.byId('divSidePanel').style.display = 'none';
-                dojo.byId('divAddressResultContainer').appendChild(dojo.byId('tblAddressSearch'));
-                dojo.byId('divAddressContainer').style.display = "none";
-                dojo.replaceClass("divAddressContainer", "", "opacityHideAnimation");
-                dojo.byId("tdHelp").style.display = "none";
-                dojo.byId('divSplashScreenDialog').style.width = "95%";
-                dojo.byId('divSplashScreenDialog').style.height = "95%";
-                dojo.byId('divParcelInformation').style.display = "none";
-                dojo.byId('divParcelInformation').className = "";
-                dojo.byId('divFeatureInformation').style.display = "none";
-                dojo.byId('divFeatureInformation').className = "";
-                dojo.byId("lblAppName").style.display = "none";
-                dojo.byId("lblAppName").style.width = "80%";
-                dojo.byId("divLogo").style.display = "none";
-                dojo.byId("tblLayers").style.display = "none";
-                dojo.byId("imgBaseMap").src = "images/layers.png";
-            }
-            else {
-                dojo.byId('divAddressSearch').appendChild(dojo.byId('tblAddressSearch'));
-                dojo.byId('divSplashScreenDialog').style.width = "350px";
-                dojo.byId('divSplashScreenDialog').style.height = "290px";
-                dojo.byId("divLogo").style.display = "block";
-                reportGPService = new esri.tasks.Geoprocessor(responseObject.ReportGPServiceURL);
-
-                var table = document.createElement("table");
-                table.style.width = "100%";
-                var tBody = document.createElement("tbody");
-                table.appendChild(tBody);
-                table.cellSpacing = 0;
-                table.cellPadding = 0;
-                for (var i = 0; i < responseObject.ReportLayouts.length; i++) {
-                    var tr = document.createElement("tr");
-                    tBody.appendChild(tr);
-                    var td = document.createElement("td");
-                    td.style.height = "25px";
-                    td.style.paddingLeft = "5px";
-                    td.align = "left";
-                    td.style.borderBottom = "1px solid white";
-                    td.style.cursor = "pointer";
-                    td.innerHTML = responseObject.ReportLayouts[i].DisplayText;
-                    td.setAttribute("value", responseObject.ReportLayouts[i].Value)
-                    td.onclick = function () {
-                        dojo.byId('txtSelectedLayout').value = this.innerHTML;
-                        dojo.byId('txtSelectedLayout').setAttribute("layout", this.getAttribute("value"));
-
-                        dojo.byId('divSelectedLayout').style.display = "none";
-                    }
-                    tr.appendChild(td);
-                }
-                dojo.byId('divlayoutContent').appendChild(table);
-            }
-
-            ShowProgressIndicator();
-
-            dojo.byId('divSplashScreenContainer').style.display = "block";
-
-            dojo.addClass(dojo.byId('divSplashScreenDialog'), "divSplashScreenDialogContent");
-            dojo.byId('lblAppName').innerHTML = responseObject.ApplicationName;
-
-            dojo.byId('imgApplication').src = responseObject.ApplicationIcon;
-            dojo.byId('divSplashContent').innerHTML = responseObject.SplashScreenMessage;
-
-            dojo.replaceClass("divSplashScreenDialog", "showContainer", "hideContainer");
-
-            SetHeightSplashScreen();
-
-
-            var infoWindow = new mobile.InfoWindow({
-                domNode: dojo.create("div", null, dojo.byId("map"))
-            });
-
-            map = new esri.Map("map", { slider: true, infoWindow: infoWindow });
-
-            geometryService = new esri.tasks.GeometryService(responseObject.GeometryService);
-
-            CreateBaseMapComponent();
-            dojo.byId("txtAddress").value = responseObject.LocatorDefaultAddress;
-
-            dojo.connect(map, "onLoad", function () {
-                MapInitFunction();
-                var mapExtent = responseObject.DefaultExtent.split(',');
-                var extent = GetQuerystring('extent');
-                if (extent != "") {
-                    mapExtent = extent.split(',');
-                }
-                var objectId = GetQuerystring('objectId');
-                if (objectId != "") {
-                    LocateParcelonMap(unescape(objectId));
-                    return;
-                }
-                mapExtent = new esri.geometry.Extent(parseFloat(mapExtent[0]), parseFloat(mapExtent[1]), parseFloat(mapExtent[2]), parseFloat(mapExtent[3]), map.spatialReference);
-                map.setExtent(mapExtent);
-            });
-
-            dojo.connect(dojo.byId('help'), "onclick", function () {
-                window.open(responseObject.HelpURL);
-            });
-
-            tb = new esri.toolbars.Draw(map);
-            dojo.connect(tb, "onDrawEnd", finishDrawingFeedback);
-            drawTool = esri.toolbars.Draw.POLYGON;
-            polygonFillSymbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_DASHDOT, new dojo.Color([255, 0, 0]), 2), new dojo.Color([255, 190, 190, 0.25]));
-
-            pdfData.isEmpty = true;
-
-        }
-
-        function MapInitFunction() {
-            if (!isMobileDevice) {
-                window.onresize = function () {
-                    resizeHandler();
-                }
-            }
-
-            var mapSlider = dojo.query(".esriSimpleSlider", this.domNode);
-            if (mapSlider.length > 0) {
-                dojo.addClass(mapSlider[0], "roundedCorner");
-            }
-
-            var webmapDetails = GetWebMapInfo("neighborhoodKey", webMapId);
-            webmapDetails.addCallback(function (webmapInfo) {
-                neighbourHoodLayerInfo = webmapInfo.layerInfo;
-                for (var i in webmapInfo.layerInfo) {
-                    var neighbourHoodLayer = new esri.layers.FeatureLayer(webmapInfo.url + "/" + webmapInfo.layerInfo[i].id, {
-                        mode: esri.layers.FeatureLayer.MODE_SELECTION,
-                        outFields: ["*"],
-                        id: webmapInfo.layerInfo[i].id
-                    });
-                    map.addLayer(neighbourHoodLayer);
-                }
-            });
-            HideProgressIndicator();
-
-            var gLayer = new esri.layers.GraphicsLayer();   //Adding a temporary graphics layer
-            gLayer.id = tempLayerId;
-            map.addLayer(gLayer);
-
-            var tempParcelLayer = new esri.layers.GraphicsLayer();   //Adding a temporary graphics layer
-            tempParcelLayer.id = tempParcelLayerId;
-            map.addLayer(tempParcelLayer);
-
-            var fbLayer = new esri.layers.FeatureLayer(feedbackLayer.ServiceUrl, {
-                mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
-                outFields: ["*"],
-                id: feedbackLayer.Key,
-                displayOnPan: false
-            });
-
-            fbLayer.setDefinitionExpression("1=2");
-            map.addLayer(fbLayer);
-
-            var handle = dojo.connect(fbLayer, "onUpdateEnd", function (features) {
-                for (var key in feedbackAttributes) {
-                    if (feedbackAttributes[key].DomainNames) {
-                        for (var index in fbLayer.fields) {
-                            if (fbLayer.fields[index].name == key) {
-                                PopulateFeedbackTypes(fbLayer.fields[index].domain.codedValues, feedbackAttributes[key].ControlId);
-                            }
-                        }
-                    }
-                }
-                dojo.disconnect(handle);
-            });
-
-            for (var i = 0; i < layers.length; i++) {
-                if (layers[i].isDynamicMapService) {
-                    var lastindex = layers[i].ServiceURL.lastIndexOf('/');
-                    map.addLayer(CreateDynamicServiceLayer(layers[i].ServiceURL, layers[i].ServiceURL.substr(lastindex + 1), layers[i].Key, layers[i].isVisible, layers[i].Title));
-                }
-                else {
-                    var featureLayer = new esri.layers.FeatureLayer(layers[i].ServiceURL, {
-                        mode: esri.layers.FeatureLayer.MODE_SELECTION,
-                        outFields: ["*"],
-                        id: layers[i].Key,
-                        displayOnPan: false
-                    });
-
-                    dojo.connect(map, "onExtentChange", function (evt) {
-                        mapScale = map.getLayer(baseMapLayers[0].Key).tileInfo.lods[map.getLevel()].scale;
-                        if (!isOrientationChanged) {
-                            if (selectedGraphic) {
-                                var screenPoint = map.toScreen(selectedGraphic);
-                                screenPoint.y = map.height - screenPoint.y;
-                                map.infoWindow.setLocation(screenPoint);
-                                return;
-                            }
-                        }
-                        dojo.byId("divShareContainer").setAttribute("mapScale", mapScale);
-                        if (dojo.coords("divShareContainer").h > 0) {
-                            ShareLink(false);
-                        }
-                    });
-
-                    if (layers[i].UseColor) {
-                        var customLFillSymbol = new esri.symbol.SimpleFillSymbol();
-                        var customFillColor = new dojo.Color(layers[i].Color);
-                        customFillColor.a = Number(layers[i].Alpha);
-                        customLFillSymbol.setColor(customFillColor);
-                        var customRenderer = new esri.renderer.SimpleRenderer(customLFillSymbol);
-                        featureLayer.setRenderer(customRenderer);
-
-                    }
-                    map.addLayer(featureLayer);
-
-
-                    FixTabWidth();
-
-                    dojo.connect(map, "onClick", function (evt) {
-                        if (draw) {
-                            map.infoWindow.hide();
-                            return;
-                        }
-                        selectedGraphic = null;
-
-                        var checked = dojo.query('img[state = "check"]', dojo.byId('divLayers'));
-                        if (!draw) {
-                            if (checked.length == 0) {
-                                LocateParcel(null, evt.mapPoint)
-                                return;
-                            }
-                        }
-                        if (!isMobileDevice) {
-                            dojo.byId("divParcelInformation").style.display = "none";
-                            dojo.byId("divFeatureInformation").style.display = "none";
-                        }
-                        ShowFeatureInfoWindow(evt.mapPoint);
-
-                    });
-                }
-            }
-        }
-
-        dojo.addOnLoad(init);
-    </script>
+    <script src="js/homePage.js" type="text/javascript"></script>
 </head>
 <body onorientationchange="OrientationChanged();">
     <div id="mapView" style="width: 100%; height: 100%;">
@@ -460,7 +79,7 @@
                             <td align="center" align="left" class="tdHeaderMobile">
                                 <img src="images/pdf.png" class="imgOptions" title="Create report" onclick="CreatePropertyReport();">
                             </td>
-                            <td align="center" align="left" class="tdHeaderMobile">
+                            <td align="center" align="left" class="tdHeaderMobile" id="tdParcelMarkUp">
                                 <img src="images/comments.png" class="imgOptions" title="Submit feedback" onclick="ShowFeedback();" />
                             </td>
                             <td align="center" align="left" id="tdBaseMap" class="tdHeader">
@@ -652,6 +271,13 @@
                         </div>
                     </div>
                 </div>
+                <table style="height: 100%; width: 100%;">
+                    <tr>
+                        <td align="center">
+                            <img id="imgSearchLoader" src="images/loader.gif" class="imgSearchLoader" />
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
@@ -722,7 +348,8 @@
                     </tr>
                     <tr>
                         <td>
-                            <textarea id="txtComment" class="textarea" placeholder="Enter comments"></textarea>
+                            <textarea id="txtComment" class="textarea" placeholder="Enter comments" maxlength="250"
+                                onkeypress="if(dojo.isIE){return ImposeMaxLength(this, 249);}else{return ImposeMaxLength(this, 250);}"></textarea>
                         </td>
                     </tr>
                 </table>
@@ -1114,7 +741,7 @@
                         </div>
                         <table>
                             <tr>
-                                <td align="center">
+                                <td align="center" id="tdTabBar">
                                     <div id="divTabBar" dojotype="dojox.mobile.TabBar" bartype="segmentedControl">
                                         <div id="divProperty" dojotype="dojox.mobile.TabBarButton" selected="true" onclick="ShowProperty();">
                                             Property</div>
@@ -1125,7 +752,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        </table>
+                        </table>                     
                     </div>
                 </td>
             </tr>

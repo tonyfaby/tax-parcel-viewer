@@ -1,33 +1,37 @@
 ﻿/** @license
- | Version 10.1.1
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
-var isOrientationChanged = false;
-var tinyResponse; //variable for storing the response getting from tiny url api
-var tinyUrl; //variable for storing the tiny url
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
+var isOrientationChanged = false; //variable to store the flag on orientation
+var tinyResponse; //variable to store the response getting from tiny url api
+var tinyUrl; //variable to store the tiny url
+var popupWin; //variable to store the paypal popup window object
 
-//function to handle orientation change event
+//Handles orientation change event
 function OrientationChanged() {
     map.infoWindow.hide();
     if (map) {
         isOrientationChanged = true;
         var timeout = (isMobileDevice && isiOS) ? 100 : 500;
+        map.reposition();
+        map.resize();
+        if (isMobileDevice) {
+            dojo.byId('divTabBar').style.display = "none";
+        }
         setTimeout(function () {
-            if (isMobileDevice) {
-                map.reposition();
-                map.resize();
+            if (isMobileDevice) {                
                 SetHeightAddressResults();
                 SetHeightParcelData();
                 SetHeightSplashScreen();
@@ -43,7 +47,6 @@ function OrientationChanged() {
             }
             else {
                 SetHeightAddressResults();
-
                 setTimeout(function () {
                     if (selectedGraphic) {
                         map.setExtent(GetBrowserMapExtent(selectedGraphic));
@@ -51,13 +54,12 @@ function OrientationChanged() {
                     SetHeightParcelData();
                     isOrientationChanged = false;
                 }, 500);
-
             }
         }, timeout);
     }
 }
 
-//function to handle resize browser event handler
+//Handle resize browser event handler
 function resizeHandler() {
     if (map) {
         map.reposition();
@@ -67,22 +69,23 @@ function resizeHandler() {
 
 //function to fix tab width
 function FixTabWidth() {
-    if (isMobileDevice) {
+    if (isMobileDevice) {   
         setTimeout(function () {
+            dojo.byId('divTabBar').style.display = "block";
             var tabWidth = Math.round(dojo.window.getBox().w / 3);
-            dojo.byId('divTabBar').style.width = Math.round(dojo.window.getBox().w - 20) + "px";
+            dojo.byId('divTabBar').style.width = Math.round((dojo.window.getBox().w - 20)) + "px";
             dojo.query('.mblTabButton', dojo.byId('divTabBar')).forEach(function (node, idx, arr) {
                 node.style.width = (tabWidth - 14) + "px";
-            });
-        }, 500);
+            });       
+        }, 1000);
     }
 }
 
-//function to get the extent based on the mappoint for mobile devices
+//Get the extent based on the mappoint for mobile devices
 function GetMobileMapExtent(mapPoint) {
     var extent;
     if (map.getLayer(tempParcelLayerId).graphics.length > 0) {
-        extent = map.getLayer(tempParcelLayerId).graphics[0].geometry.getExtent().expand(5);
+        extent = map.getLayer(tempParcelLayerId).graphics[0].geometry.getExtent().expand(4);
     }
     else {
         extent = map.extent;
@@ -90,21 +93,15 @@ function GetMobileMapExtent(mapPoint) {
     var width = extent.getWidth();
     var height = extent.getHeight();
     var xmin = mapPoint.x - (width / 2);
-    var ymin = mapPoint.y - (height / 4);
+    var ymin = mapPoint.y - (height / 6);
     var xmax = xmin + width;
     var ymax = ymin + height;
     return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
 }
 
-//function to get the extent based on the mappoint
+//Get the extent based on the mappoint
 function GetBrowserMapExtent(mapPoint) {
-    var extent;
-    if (map.getLayer(tempParcelLayerId).graphics.length > 0) {
-        extent = map.getLayer(tempParcelLayerId).graphics[0].geometry.getExtent().expand(6);
-    }
-    else {
-        extent = map.extent;
-    }
+    var extent = map.extent;
     var width = extent.getWidth();
     var height = extent.getHeight();
     var xmin = mapPoint.x - ((2 * width) / 2.8);
@@ -114,7 +111,25 @@ function GetBrowserMapExtent(mapPoint) {
     return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
 }
 
-//function to animate basemap switch
+//Get the extent based on the mappoint
+function GetPDFMapExtent(mapPoint) {
+    var extent;
+    if (map.getLayer(tempParcelLayerId).graphics.length > 0) {
+        extent = map.getLayer(tempParcelLayerId).graphics[0].geometry.getExtent().expand(6);
+    }
+    else {
+        extent = map.extent;
+    }
+    var width = extent.getWidth();
+    var height = extent.getHeight();
+    var xmin = mapPoint.x - ((2 * width) / 3.8);
+    var ymin = mapPoint.y - (height / 2);
+    var xmax = xmin + width;
+    var ymax = ymin + height;
+    return new esri.geometry.Extent(xmin, ymin, xmax, ymax, map.spatialReference);
+}
+
+//Animate basemap switcher
 function ShowBaseMaps() {
     if (dojo.hasClass('divShareContainer', "showContainerHeight")) {
         dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
@@ -137,7 +152,7 @@ function ShowBaseMaps() {
     }
 }
 
-//Function to get map Extent
+//Get map Extent
 function GetMapExtent() {
     var extents = map.extent.xmin.toString() + ",";
     extents += map.extent.ymin.toString() + ",";
@@ -155,9 +170,8 @@ function ShareLink(ext) {
     var urlStr = encodeURI(url.path) + "?extent=" + mapExtent;
     for (var i = 0; i < layers.length; i++) {
         if (!layers[i].isDynamicMapService) {
-
             if (map.getLayer(tempParcelLayerId).graphics.length > 0) {
-                urlStr = encodeURI(url.path) + "?objectId=" + map.getLayer(tempParcelLayerId).graphics[0].attributes[map.getLayer(layers[i].Key).objectIdField];
+                urlStr = encodeURI(url.path) + "?parcelId=" + dojo.string.substitute(parcelAttributeID, map.getLayer(tempParcelLayerId).graphics[0].attributes);
             }
         }
     }
@@ -227,7 +241,7 @@ function Share(site) {
     }
 }
 
-//function to hide splash screen container
+//Hide splash screen container
 function HideSplashScreenMessage() {
     if (dojo.isIE < 9) {
         dojo.byId("divSplashScreenDialog").style.display = "none";
@@ -236,34 +250,91 @@ function HideSplashScreenMessage() {
     dojo.replaceClass("divSplashScreenDialog", "hideContainer", "showContainer");
     window.onkeydown = null;
     dojo.byId('txtAddress').readOnly = false;
-    dojo.connect(dojo.byId("txtAddress"), 'onkeypress', function (evt) {
-        key = evt.keyCode;
-        if (key == dojo.keys.ENTER) {
-            dojo.byId("txtAddress").blur();
-            LocateAddress();
+
+    // Identify the key presses while implementing auto-complete and assign appropriate actions
+    dojo.connect(dojo.byId("txtAddress"), 'onkeyup', function (evt) {
+        if (evt) {
+            if (evt.keyCode == dojo.keys.ENTER) {
+                if (dojo.byId("txtAddress").value != '') {
+                    LocateAddress();
+                    return;
+                }
+            }
+
+            if ((!((evt.keyCode >= 46 && evt.keyCode < 58) || (evt.keyCode > 64 && evt.keyCode < 91) || (evt.keyCode > 95 && evt.keyCode < 106) || evt.keyCode == 8 || evt.keyCode == 110 || evt.keyCode == 188)) || (evt.keyCode == 86 && evt.ctrlKey) || (evt.keyCode == 88 && evt.ctrlKey)) {
+                evt = (evt) ? evt : event;
+                evt.cancelBubble = true;
+                if (evt.stopPropagation) evt.stopPropagation();
+                return;
+            }
+            if (dojo.byId("txtAddress").value.trim() != '') {
+                if (lastSearchString != dojo.byId("txtAddress").value.trim()) {
+                    lastSearchString = dojo.byId("txtAddress").value.trim();
+                    RemoveChildren(dojo.byId('tblAddressResults'));
+
+                    // Clear any staged search
+                    clearTimeout(stagedSearch);
+
+                    if (dojo.byId("txtAddress").value.trim().length > 0) {
+                        // Stage a new search, which will launch if no new searches show up 
+                        // before the timeout
+                        stagedSearch = setTimeout(function () {
+                            dojo.byId("imgSearchLoader").style.display = "block";
+                            LocateAddress();
+                        }, 500);
+                    }
+                }
+            }
+            else {
+                lastSearchString = dojo.byId("txtAddress").value.trim();
+                dojo.byId("imgSearchLoader").style.display = "none";
+                RemoveChildren(dojo.byId('divAddressHeader'));
+                RemoveChildren(dojo.byId('tblAddressResults'));
+                CreateScrollbar(dojo.byId("divAddressScrollContainer"), dojo.byId("divAddressScrollContent"));
+            }
         }
+    });
+
+    dojo.connect(dojo.byId("txtAddress"), 'onpaste', function (evt) {
+        setTimeout(function () {
+            LocateAddress();
+        }, 100);
+    });
+
+    dojo.connect(dojo.byId("txtAddress"), 'oncut', function (evt) {
+        setTimeout(function () {
+            LocateAddress();
+        }, 100);
     });
 }
 
-//function to set height for splash screen
+//Set height for splash screen
 function SetHeightSplashScreen() {
     var height = (isMobileDevice) ? (dojo.window.getBox().h - 110) : (dojo.coords(dojo.byId('divSplashScreenDialog')).h - 80);
     dojo.byId('divSplashContent').style.height = (height + 10) + "px";
     CreateScrollbar(dojo.byId("divSplashContainer"), dojo.byId("divSplashContent"));
 }
 
-
-//function to show progress indicator
+//Show progress indicator
 function ShowProgressIndicator(nodeId) {
     dojo.byId('divLoadingIndicator').style.display = "block";
 }
 
-//function to hide progress indicator
+//Hide progress indicator
 function HideProgressIndicator() {
     dojo.byId('divLoadingIndicator').style.display = "none";
+    if (isMobileDevice) {
+        if (map) {
+            var ext = map.extent;
+            ext.xmin = (map.extent.xmin + 2);
+            map.setExtent(ext);
+            map.resize();
+            map.reposition();
+        }
+    }
 }
 
-//function to locate using GPS
+//Current location
 function ShowMyLocation() {
     map.getLayer(tempLayerId).clear();
     navigator.geolocation.getCurrentPosition(
@@ -306,7 +377,7 @@ function ShowMyLocation() {
 		}, { timeout: 5000 });
 }
 
-//Function to get the query string value of the provided key if not found the function returns empty string
+//Get the query string value of the provided key if not found the function returns empty string
 function GetQuerystring(key) {
     var _default;
     if (_default == null) _default = "";
@@ -319,20 +390,20 @@ function GetQuerystring(key) {
         return qs[1];
 }
 
-//function to convert string to bool
+//Convert string to bool
 String.prototype.bool = function () {
     return (/^true$/i).test(this);
 };
 
-//function to trim string
+//Trim string
 String.prototype.trim = function () { return this.replace(/^\s+|\s+$/g, ''); }
 
-//Function to append ... for a string
+//Append ... for a string
 String.prototype.trimString = function (len) {
     return (this.length > len) ? this.substring(0, len) + "..." : this;
 }
 
-//Creating dynamic scrollbar within container for target content
+//Create dynamic scrollbar within container for target content
 var scrolling = false; //flag to detect is touchmove event scrolling div
 
 function CreateScrollbar(container, content) {
@@ -535,21 +606,21 @@ function CreateScrollbar(container, content) {
     //touch scrollbar end
 }
 
-//Function for removing child elements from a container
+//Remove child elements from a container
 function RemoveChildren(parentNode) {
     while (parentNode.hasChildNodes()) {
         parentNode.removeChild(parentNode.lastChild);
     }
 }
 
-//function to remove scroll bar
+//Remove scroll bar
 function RemoveScrollBar(container) {
     if (dojo.byId(container.id + 'scrollbar_track')) {
         container.removeChild(dojo.byId(container.id + 'scrollbar_track'));
     }
 }
 
-//function for submitting feedback
+//Display feedback container
 function ShowFeedback() {
     dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
     dojo.byId('divShareContainer').style.height = '0px';
@@ -562,7 +633,7 @@ function ShowFeedback() {
     ResetFeedBackValues();
 }
 
-//function to populate shopping cart information
+//Populate shopping cart information
 function ShowShoppingCartContainer() {
     dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
     dojo.byId('divShareContainer').style.height = '0px';
@@ -751,7 +822,7 @@ function SelectAll(chkSelectAll) {
     }
 }
 
-//function to create checkbox
+//Create checkbox for shopping cart
 function CreateShoppingCheckBox(parcelId, reportType, isChecked) {
     var cb = document.createElement("img");
     cb.id = "chk" + parcelId;
@@ -772,19 +843,20 @@ function CreateShoppingCheckBox(parcelId, reportType, isChecked) {
     return cb;
 }
 
-//function to cancel shopping cart
+//Cancel shopping cart
 function CancelShopping() {
     dojo.byId("divAddressSearch").style.display = "block";
     dojo.byId("divShoppingCart").style.display = "none";
+    dojo.byId("txtValidationCode").value = "";
 }
 
-//functon to reset feedback values
+//Reset feedback values
 function ResetFeedBackValues() {
     map.getLayer(tempLayerId).clear();
     dojo.byId("btnDrawFeedback").innerHTML = "Draw";
 }
 
-//function for showing search panel
+//Show search panel
 function ShowSearchPanel() {
     dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
     dojo.byId('divShareContainer').style.height = '0px';
@@ -806,7 +878,7 @@ function ShowSearchPanel() {
     }
 }
 
-//function to hide address container
+//Hide address container
 function HideAddressContainer() {
     if (isMobileDevice) {
         RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
@@ -815,13 +887,13 @@ function HideAddressContainer() {
     }
 }
 
-//function to hide address container
+//Hide info window container
 function HideInfoWindowDataContainer() {
     dojo.replaceClass("divInfoWindowContainer", "opacityHideAnimation", "opacityShowAnimation");
     dojo.replaceClass("divInfoWindowContent", "hideContainer", "showContainer");
 }
 
-//function to create checkbox
+//Create checkbox for basemap container
 function CreateCheckBox(layerId, chkBoxValue, isChecked) {
     var cb = document.createElement("img");
     cb.id = "chk" + layerId;
@@ -846,7 +918,7 @@ function CreateCheckBox(layerId, chkBoxValue, isChecked) {
     return cb;
 }
 
-//function for creating a dynamic layer and adding those values to a div container
+//Create dynamic layer and adding those values to a div container
 function CreateDynamicServiceLayer(layerURL, layerIndex, layerId, isVisible, displayName) {
     var imageParams = new esri.layers.ImageParameters();
     var lastindex = layerURL.lastIndexOf('/');
@@ -934,7 +1006,7 @@ function CreateDynamicServiceLayer(layerURL, layerIndex, layerId, isVisible, dis
     return dynamicMapService;
 }
 
-//function to get layerinfo based on key
+//Get layer info based on key
 function GetLayerInfo(key) {
     for (var i = 0; i < layers.length; i++) {
         if (layers[i].Key == key)
@@ -942,7 +1014,7 @@ function GetLayerInfo(key) {
     }
 }
 
-//function to set height for parcel data container
+//Set height for parcel data container
 function SetHeightFeatureData() {
     var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId('divFeatureDataScrollbarContent')).h;
 
@@ -958,12 +1030,12 @@ function SetHeightFeatureData() {
 
 }
 
-//function to get MaxOffSet
+//Get MaxOffSet
 function MaxOffSet() {
     return Math.floor(map.extent.getWidth() / map.width);
 }
 
-//function to get extent from point for querying
+//Get extent from point to query the layer
 function ExtentFromPoint(point) {
     var tolerance = (MaxOffSet() < 10) ? 10 : MaxOffSet();
     if (isMobileDevice) {
@@ -980,7 +1052,7 @@ function ExtentFromPoint(point) {
 var layerCount = 0;
 var responseCount = 0;
 
-//function to populate sales/foreclosure data
+//Populate sales/foreclosure data
 function ShowFeatureInfoWindow(mapPoint) {
     layerCount = 0;
     responseCount = 0;
@@ -999,7 +1071,7 @@ function ShowFeatureInfoWindow(mapPoint) {
 
 
 
-//function to query data
+//Query data for sales/foreclosure layers
 function QueryLayer(node, mapPoint) {
     var layerInfo = layers[GetLayerInfo(node.getAttribute("layerId"))];
     var queryTask = new esri.tasks.QueryTask(layerInfo.ServiceURL);
@@ -1100,7 +1172,7 @@ function QueryLayer(node, mapPoint) {
     });
 }
 
-//function to hide parcel information
+//Hide parcel information
 function HideParcelInformationContainer() {
     if (isMobileDevice) {
         dojo.replaceClass("divParcelInformation", "opacityHideAnimation", "opacityShowAnimation");
@@ -1112,7 +1184,7 @@ function HideParcelInformationContainer() {
     }
 }
 
-//function to hide feature information
+//Hide feature information
 function HideFeatureInformationContainer() {
     if (isMobileDevice) {
         dojo.replaceClass("divFeatureInformation", "opacityHideAnimation", "opacityShowAnimation");
@@ -1125,7 +1197,7 @@ function HideFeatureInformationContainer() {
     }
 }
 
-//function to create property report
+//Create property report
 function CreatePropertyReport() {
     dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
     dojo.byId('divShareContainer').style.height = '0px';
@@ -1154,7 +1226,7 @@ function CreatePropertyReport() {
     }
 }
 
-//function to show the neighborhood view
+//Show the neighborhood view
 function ShowNeighborhood() {
     RemoveScrollBar(dojo.byId("divParcelDataScrollContainer"));
     dojo.byId("divParcelDataScrollContainer").style.display = "none";
@@ -1163,7 +1235,7 @@ function ShowNeighborhood() {
     CreateScrollbar(dojo.byId("divNeighborhoodContainer"), dojo.byId("divNeighborhoodContent"));
 }
 
-//function to show the broadband view
+//Show the broadband view
 function ShowBroadband() {
     RemoveScrollBar(dojo.byId("divParcelDataScrollContainer"));
     dojo.byId("divParcelDataScrollContainer").style.display = "none";
@@ -1174,7 +1246,7 @@ function ShowBroadband() {
     }, 500);
 }
 
-//function to show the property view
+//Show the property view
 function ShowProperty() {
     RemoveScrollBar(dojo.byId('divFeatureDataScrollbarContainer'));
     RemoveScrollBar(dojo.byId("divParcelDataScrollContainer"));
@@ -1185,7 +1257,7 @@ function ShowProperty() {
     CreateScrollbar(dojo.byId("divParcelDataScrollContainer"), dojo.byId("divParcelScrollContent"));
 }
 
-//function to show the property view
+//Show the property view on start
 function ShowPropertyOnStart() {
     RemoveScrollBar(dojo.byId("divParcelDataScrollContainer"));
     ResetData();
@@ -1194,8 +1266,8 @@ function ShowPropertyOnStart() {
     dojo.byId("divBroadbandContainer").style.display = "none";
 }
 
-//function to populate broadband information
-function PopulateBroadBandInformation(broadBandService, location, parcelId, reportType) {
+//Populate broadband information
+function PopulateBroadBandInformation(broadBandService, location, parcelId, reportType, PDF) {
     RemoveChildren(dojo.byId('divBroadbandContent'));
     var url = dojo.string.substitute(broadBandService.ServiceURL, location);
     dojo.io.script.get({
@@ -1215,8 +1287,9 @@ function PopulateBroadBandInformation(broadBandService, location, parcelId, repo
                 ExecuteParcelGPService(parcelId, reportType);
             }
             var hasChildren = dojo.byId("divBroadbandContent").hasChildNodes();
-
-            HideProgressIndicator();
+            if (!PDF) {
+                HideProgressIndicator();
+            }
             if (!results) {
                 return;
             }
@@ -1261,7 +1334,7 @@ var recordCounter = 0;
 var noofRecords = 0;
 
 
-//function to call gp service
+//get params to call GP service
 function ExecuteParcelGPService(parcelId, reportType) {
     if (pdfData[parcelId][reportType]["NeighbourhoodInfo"] == "")
         return;
@@ -1296,37 +1369,58 @@ function ExecuteParcelGPService(parcelId, reportType) {
     CallParcelGPService(parcelId, reportType);
 }
 
+//Post data to GP service
 function CallParcelGPService(parcelId, reportType) {
     ShowProgressIndicator();
     var broadbandInfo = [];
     for (var i in broadBandService) {
         broadbandInfo.push(pdfData[parcelId][reportType]["BroadbandInfo"][broadBandService[i].Key]);
     }
-    var mapExtent = pdfData[parcelId][reportType]["mapExtent"].split(",");
+    var mapExtent = pdfData[parcelId][reportType]["mapExtent"];
     var reportData = pdfData[parcelId][reportType]["AttributeInfo"] + "~" + pdfData[parcelId][reportType]["NeighbourhoodInfo"] + "~" + broadbandInfo.join("#");
+
+    for (var i = 0; i < layers.length; i++) {
+        if (!layers[i].isDynamicMapService) {
+            var taxServiceURL = layers[i].ServiceURL;          
+            var taxServiceOpacity = layers[i].Alpha;
+            var taxServiceColor = new dojo.Color(layers[i].Color);
+            var taxParcelColor = [];
+            taxParcelColor.push(taxServiceColor.r);
+            taxParcelColor.push(taxServiceColor.g);
+            taxParcelColor.push(taxServiceColor.b);
+            taxParcelColor.push(taxServiceColor.a);
+            break;
+        }
+    }
+
+    for (var bMap = 0; bMap < baseMapLayers.length; bMap++) {
+        if (map.getLayer(baseMapLayers[bMap].Key).visible) {
+            var basemapURL = baseMapLayers[bMap].MapURL;
+        }
+    }
 
     if (reportType == 'PropertyMap') {
         var webmap = {
             "mapOptions": {
                 "extent": {
-                    "xmin": parseFloat(mapExtent[0]),
-                    "ymin": parseFloat(mapExtent[1]),
-                    "xmax": parseFloat(mapExtent[2]),
-                    "ymax": parseFloat(mapExtent[3]),
+                    "xmin": parseFloat(mapExtent.xmin),
+                    "ymin": parseFloat(mapExtent.ymin),
+                    "xmax": parseFloat(mapExtent.xmax),
+                    "ymax": parseFloat(mapExtent.ymax),
                     "spatialReference": {
                         "wkid": 102100
                     }
                 },
-                "scale": 4000,
+                "scale": pdfData[parcelId][reportType]["scale"],
                 "spatialReference": {
                     "wkid": 102100
                 }
             },
             "operationalLayers": [
             {
-                "url": "http://localgovtemplates.esri.com/ArcGIS/rest/services/TaxParcelQuery/MapServer/0",
+                "url": taxServiceURL,
                 "title": "Watershed",
-                "opacity": 1,
+                "opacity": taxServiceOpacity,
                 "layerDefinition": {
                     "drawingInfo": {
                         "renderer": {
@@ -1334,22 +1428,12 @@ function CallParcelGPService(parcelId, reportType) {
                             "symbol": {
                                 "type": "esriSFS",
                                 "style": "esriSFSSolid",
-                                "color": [
-                                        179,
-                                        239,
-                                        167,
-                                        200
-                                    ],
+                                "color": taxParcelColor,
                                 "outline": {
                                     "type": "esriSLS",
                                     "style": "esriSLSSolid",
-                                    "color": [
-                                        0,
-                                        100,
-                                        0,
-                                        200
-                                    ],
-                                    "width": 1.5
+                                    "color": taxParcelColor,
+                                    "width": 2.5
                                 }
                             },
                             "label": "",
@@ -1368,7 +1452,7 @@ function CallParcelGPService(parcelId, reportType) {
                 "title": "Shared Imagery Basemap",
                 "baseMapLayers": [
                 {
-                    "url": "http://localgovtemplates.esri.com/ArcGIS/rest/services/ParcelPublicAccessforBloomfield/MapServer"
+                    "url": basemapURL
                 }
             ]
             },
@@ -1471,6 +1555,7 @@ function CallParcelGPService(parcelId, reportType) {
     }
 }
 
+//Convert JSON format to string
 function JSONstringify(obj) {
     var t = typeof (obj);
     if (t != "object" || obj === null) {
@@ -1493,7 +1578,7 @@ function JSONstringify(obj) {
 }
 
 
-// Disconnects click query and activates tool for drawing feedback
+//Disconnects click query and activates tool for drawing feedback
 function startDrawingFeedback(btnDrawFeedback) {
     draw = true;
     tb.activate(drawTool);
@@ -1504,7 +1589,7 @@ function startDrawingFeedback(btnDrawFeedback) {
     dojo.byId("trDrawFeedback").style.display = "none";
 }
 
-// Handles end of drawing feedback
+//Handles end of drawing feedback
 function finishDrawingFeedback(geometry) {
     draw = false;
     tb.deactivate();
@@ -1515,25 +1600,25 @@ function finishDrawingFeedback(geometry) {
     dojo.byId("btnDrawFeedback").innerHTML = "Redraw";
 }
 
-//function to show toggle request types
+//Show toggle request types
 function ToggleRequestTypesList() {
     dojo.byId('divSelectedRequest').style.display = (dojo.byId('divSelectedRequest').style.display == "block") ? "none" : "block";
     CreateScrollbar(dojo.byId('divScrollBarContainer'), dojo.byId('divScrollBarContent'));
 }
 
-//function to displaying the PDF data
+//Displaying the PDF data
 function CreatePdfParcelId(parcelID) {
     dojo.byId("tdParcelId").innerHTML = parcelID;
     dojo.byId("tdTaxParcelId").innerHTML = parcelID;
 }
 
-//function to show toggle layout types
+//Show toggle layout types
 function ToggleSelectedLayoutList() {
     dojo.byId('divSelectedLayout').style.display = (dojo.byId('divSelectedLayout').style.display == "block") ? "none" : "block";
     CreateScrollbar(dojo.byId('divLayoutconatiner'), dojo.byId('divlayoutContent'));
 }
 
-//function to create pdf report
+//Create pdf report for map/parcel
 function CreatePDF(reportType) {
     var feature = map.getLayer(tempParcelLayerId).graphics;
 
@@ -1585,7 +1670,8 @@ function CreatePDF(reportType) {
             pdfData[parcelId][reportType]["AttributeInfo"] = "";
             pdfData[parcelId][reportType]["NeighbourhoodInfo"] = "";
             pdfData[parcelId][reportType]["BroadbandInfo"] = {};
-            pdfData[parcelId][reportType]["mapExtent"] = map.extent.xmin + "," + map.extent.ymin + "," + map.extent.xmax + "," + map.extent.ymax;
+            pdfData[parcelId][reportType]["mapExtent"] = GetPDFMapExtent(feature.geometry.getExtent().getCenter());
+            pdfData[parcelId][reportType]["scale"] = map.__LOD.scale;
             pdfData[parcelId][reportType]["layout"] = dojo.byId('txtSelectedLayout').getAttribute("layout");
 
 
@@ -1625,7 +1711,7 @@ function CreatePDF(reportType) {
 
             for (var i in neighbourHoodLayerInfo) {
                 if (map.getLayer(neighbourHoodLayerInfo[i].id).maxScale <= mapScale && map.getLayer(neighbourHoodLayerInfo[i].id).minScale >= mapScale) {
-                    PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], feature.geometry.getExtent().getCenter(), feature.attributes[parcelAttributeID], reportType);
+                    PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], feature.geometry.getExtent().getCenter(), dojo.string.substitute(parcelAttributeID, feature.attributes), reportType);
                 }
             }
 
@@ -1633,14 +1719,14 @@ function CreatePDF(reportType) {
                 var point = newPoint[0];
                 var location = { "latitude": point.y, "longitude": point.x };
                 for (var i = 0; i < broadBandService.length; i++) {
-                    PopulateBroadBandInformation(broadBandService[i], location, feature.attributes[parcelAttributeID], reportType);
+                    PopulateBroadBandInformation(broadBandService[i], location, dojo.string.substitute(parcelAttributeID, feature.attributes), reportType, true);
                 }
             });
         }
     }
 }
 
-//function to cancel the creation of pdf
+//Cancel the creation of pdf
 function CancelPdf() {
     dojo.byId("tdParcelId").innerHTML = "";
     dojo.byId("tdTaxParcelId").innerHTML = "";
@@ -1650,7 +1736,7 @@ function CancelPdf() {
     dojo.byId("divAddressSearch").style.display = "block";
 }
 
-//function to populate issue types
+//Populate issue types
 function PopulateFeedbackTypes(domainNames, controlId) {
     var table = document.createElement("table");
     table.style.width = "95%";
@@ -1690,10 +1776,10 @@ function PopulateFeedbackTypes(domainNames, controlId) {
     dojo.byId('div' + controlId).appendChild(scrollbar_container);
 }
 
-//function to trim string
+//Trim string
 String.prototype.trim = function () { return this.replace(/^\s+|\s+$/g, ''); }
 
-//function to submit feedback
+//Submit feedback
 function SubmitFeedback() {
     if (!ValidateData()) {
         return;
@@ -1729,14 +1815,14 @@ function SubmitFeedback() {
     });
 }
 
-//function cancel feedback
+//Cancel feedback
 function CancelFeedBack() {
     ResetData();
     dojo.byId("divAddressSearch").style.display = "block";
     dojo.byId("divFeedback").style.display = "none";
 }
 
-//function for reseting data
+//Reset data for feedback container
 function ResetData() {
     ShowSpanErrorMessage("spanServiceErrorMessage", "");
 
@@ -1753,13 +1839,13 @@ function ResetData() {
     tb.deactivate();
 }
 
-//Function for validating Email in comments tab
+//Validating Email in comments tab
 function CheckMailFormat(emailValue) {
     var pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     return emailValue.length <= 149 && pattern.test(emailValue);
 }
 
-//function to validate name
+//Validate name
 function IsName(name) {
     var namePattern = /^[A-Za-z\.\-\, ]{1,150}$/;
     if (namePattern.test(name)) {
@@ -1769,7 +1855,7 @@ function IsName(name) {
     }
 }
 
-//function to validate number
+//Validate number
 function IsNumber(number) {
     var regexObj = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     if (regexObj.test(number)) {
@@ -1780,7 +1866,7 @@ function IsNumber(number) {
     }
 }
 
-//function to validate data
+//Validate data the submit details
 function ValidateData() {
     dojo.byId("spanServiceErrorMessage").style.display = "none";
     if (dojo.byId("txtSelectedRequest").value.trim() == "") {
@@ -1825,13 +1911,13 @@ function ValidateData() {
     return true;
 }
 
-//function to show error message span
+//Show error message span
 function ShowSpanErrorMessage(controlId, message) {
     dojo.byId(controlId).style.display = "block";
     dojo.byId(controlId).innerHTML = message;
 }
 
-//function to populate neighborhood data
+//Populate neighborhood data
 function PopulateNeighbourHoodInformation(neighbourHoodLayerInfo, mapPoint, parcelId, reportType) {
     RemoveChildren(dojo.byId("divChartContent"));
     RemoveChildren(dojo.byId("divLegend"));
@@ -1895,14 +1981,14 @@ function FixTokens(value) {
     return value.replace(/(\{[^\{\r\n]+\})/g, "$$$1");
 }
 
-//function to show image
+//Display image on chart
 function ShowImage(value) {
     var img = document.createElement("img");
     img.src = value;
     dojo.byId("divChartContent").appendChild(img);
 }
 
-//function to show chart
+//Display image on pie chart
 function ShowChart(type) {
     var pieChart = new dojox.charting.Chart2D(dojo.byId('divChartContent'));
     RemoveChildren(dojo.byId('divChartContent'));
@@ -1918,7 +2004,7 @@ function ShowChart(type) {
     pieChart.render();
 }
 
-//Function to create legend for school enrollment
+//Create legend for school enrollment
 function CreateLegend(jsonObj) {
     var table = document.createElement("table");
     var tbChart = document.createElement("tbody");
@@ -1945,8 +2031,7 @@ function CreateLegend(jsonObj) {
     dojo.byId("divLegend").appendChild(table);
 }
 
-var popupWin;
-//function to show paypal page for purchase
+//Show paypal page for purchase
 function ShowPayPal() {
     if (dojo.byId("imgPaypal").src.indexOf("disabledPayPal.gif") > 0) {
         return;
@@ -1957,7 +2042,7 @@ function ShowPayPal() {
     } else popupWin.focus();
 }
 
-//function to valiudate the code
+//Validate the request code
 function ValidateRequest() {
     dojo.xhrGet({
         url: "validate.aspx?Code=Validate&ValidationCode=" + dojo.byId('txtValidationCode').value,
@@ -1977,4 +2062,36 @@ function ValidateRequest() {
             }
         }
     });
+}
+
+//Clear default value for text box controls
+function ClearDefaultText(e) {
+    var target = window.event ? window.event.srcElement : e ? e.target : null;
+    if (!target) return;
+    target.style.color = "#FFF";
+    target.value = '';
+}
+
+//Set default value on blur
+function ReplaceDefaultText(e) {
+    var target = window.event ? window.event.srcElement : e ? e.target : null;
+    if (!target) return;
+    ResetTargetValue(target, "defaultAddressTitle", "gray");
+}
+
+//Set changed value for address
+function ResetTargetValue(target, title, color) {
+    if (target.value == '' && target.getAttribute(title)) {
+        target.value = target.title;
+        if (target.title == "") {
+            target.value = target.getAttribute(title);
+        }
+    }
+    target.style.color = color;
+    lastSearchString = dojo.byId("txtAddress").value.trim();
+}
+
+//Restrict the maximum no of characters in the text area control
+function ImposeMaxLength(Object, MaxLen) {
+    return (Object.value.length <= MaxLen);
 }

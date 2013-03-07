@@ -1,27 +1,33 @@
 ﻿/** @license
- | Version 10.1.1
- | Copyright 2012 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
- */
-//Function for locating address
+| Version 10.1.1
+| Copyright 2012 Esri
+|
+| Licensed under the Apache License, Version 2.0 (the "License");
+| you may not use this file except in compliance with the License.
+| You may obtain a copy of the License at
+|
+|    http://www.apache.org/licenses/LICENSE-2.0
+|
+| Unless required by applicable law or agreed to in writing, software
+| distributed under the License is distributed on an "AS IS" BASIS,
+| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+| See the License for the specific language governing permissions and
+| limitations under the License.
+*/
+//Get candidate results for searched address
 function LocateAddress() {
-
-    if (dojo.trim(dojo.byId("txtAddress").value) == "") {
-        alert(messages.getElementsByTagName("blankParcel")[0].childNodes[0].nodeValue);
+    if (dojo.byId("txtAddress").value.trim() == '') {
+        dojo.byId("imgSearchLoader").style.display = "none";
+        RemoveChildren(dojo.byId('tblAddressResults'));
+        RemoveChildren(dojo.byId('divAddressHeader'));
+        CreateScrollbar(dojo.byId("divAddressScrollContainer"), dojo.byId("divAddressScrollContent"));
+        if (dojo.byId("txtAddress").value != "") {
+            alert(messages.getElementsByTagName("blankParcel")[0].childNodes[0].nodeValue);    
+        }
         return;
     }
-    (isMobileDevice) ? ShowProgressIndicator('divAddressContainer') : ShowProgressIndicator('tblAddressSearch');
+
+
     for (var i = 0; i < layers.length; i++) {
         if (!layers[i].isDynamicMapService) {
             LocateParcelData(layers[i]);
@@ -29,8 +35,9 @@ function LocateAddress() {
     }
 }
 
-//function to findtask operation
+//function to findtask operation for parcels
 function LocateParcelData(layerInfo) {
+    var thisSearchTime = lastSearchTime = (new Date()).getTime();
     RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
     RemoveChildren(dojo.byId('tblAddressResults'));
     RemoveChildren(dojo.byId('divAddressHeader'));
@@ -38,20 +45,27 @@ function LocateParcelData(layerInfo) {
     var queryTask = new esri.tasks.QueryTask(layerInfo.ServiceURL);
     var query = new esri.tasks.Query();
     query.where = dojo.string.substitute(layerInfo.ParcelQuery, [dojo.byId("txtAddress").value.trim().toUpperCase()]);
-
     query.returnGeometry = false;
     var outFields = layerInfo.OutFields.split(",");
     var objectIDField = map.getLayer(layerInfo.Key).objectIdField;
     outFields.push(objectIDField);
     query.outFields = outFields;
     queryTask.execute(query, function (featureSet) {
+        if (thisSearchTime < lastSearchTime) {
+            return;
+        }
+
         if (featureSet.features.length > 0) {
+            RemoveChildren(dojo.byId('divAddressHeader'));
+
             dojo.byId("tblSearchInfo").style.display = "none";
             if (featureSet.features.length == 1) {
                 if (isMobileDevice) {
                     HideAddressContainer();
                 }
-                LocateParcelonMap(featureSet.features[0].attributes[map.getLayer(layerInfo.Key).objectIdField], null);
+                dojo.byId("txtAddress").value = featureSet.features[0].attributes[layerInfo.DisplayFields[1]];
+                lastSearchString = dojo.byId("txtAddress").value.trim();
+                LocateParcelonMap(dojo.string.substitute(parcelAttributeID, featureSet.features[0].attributes), null, featureSet.features[0].attributes[map.getLayer(layerInfo.Key).objectIdField]);
             }
             SetHeightAddressResults();
 
@@ -127,25 +141,45 @@ function LocateParcelData(layerInfo) {
             };
 
             for (var i = 0; i < featureSet.features.length; i++) {
-                CreateTable(featureSet.features[i].attributes, dojo.byId("tBody"), dojo.byId("tblAddressResults"), objectIDField, layerInfo.DisplayFields);
+                CreateTable(featureSet.features[i].attributes, dojo.byId("tBody"), dojo.byId("tblAddressResults"), parcelAttributeID, layerInfo.DisplayFields, map.getLayer(layerInfo.Key).objectIdField);
             }
-            if (featureSet.features.length > 1) {
-                HideProgressIndicator();
-            }
+            dojo.byId("imgSearchLoader").style.display = "none";
             SetHeightAddressResults();
         }
         else {
+            dojo.byId("tblSearchInfo").style.display = "none";
             dojo.byId('txtAddress').focus();
             HideProgressIndicator();
-            alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
+            dojo.byId("imgSearchLoader").style.display = "none";
+            QueryErrBack("unableToLocateParcel");
         }
     }, function err() {
         dojo.byId('txtAddress').focus();
         HideProgressIndicator();
-        alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
+        dojo.byId("imgSearchLoader").style.display = "none";
+        QueryErrBack("unableToLocateParcel");
     });
 }
 
+//This function is called when locator service fails or does not return any data
+function QueryErrBack(val) {
+    RemoveChildren(dojo.byId('tblAddressResults'));
+    CreateScrollbar(dojo.byId("divAddressScrollContainer"), dojo.byId("divAddressScrollContent"));
+
+    var table = dojo.byId("tblAddressResults");
+    var tBody = document.createElement("tbody");
+    table.appendChild(tBody);
+    table.cellSpacing = 0;
+    table.cellPadding = 0;
+
+    var tr = document.createElement("tr");
+    tBody.appendChild(tr);
+    var td1 = document.createElement("td");
+    td1.innerHTML = messages.getElementsByTagName(val)[0].childNodes[0].nodeValue;
+    tr.appendChild(td1);
+}
+
+//Sort the data in ascending/descending order
 function SortTable(table) {
     this.tbody = table.getElementsByTagName('tbody');
     this.thead = table.getElementsByTagName('thead');
@@ -193,8 +227,8 @@ function SortTable(table) {
         for (i = 0; i < newRows.length; i++) {
             this.tbody[0].appendChild(newRows[i]);
         }
-
         HideProgressIndicator();
+        dojo.byId("imgSearchLoader").style.display = "none";
     }
 
     this.sortCaseInsensitive = dojo.hitch(this, function (a, b) {
@@ -224,14 +258,16 @@ function SortTable(table) {
     }
 }
 
-//function to create table
-function CreateTable(attributes, tBody, table, objectIdField, displayFields) {
+//Create table for searched data
+function CreateTable(attributes, tBody, table, parcelAttributeID, displayFields, objectIDField) {
     map.getLayer(tempLayerId).clear();
     var tr = document.createElement("tr");
     tr.className = "trRowHeight";
 
+
     tBody.appendChild(tr);
-    tr.setAttribute("objectid", attributes[objectIdField]);
+    tr.setAttribute("parcelId", dojo.string.substitute(parcelAttributeID, attributes));
+    tr.setAttribute("objectId", attributes[objectIDField]);
 
     var td = document.createElement("td");
     for (var index in attributes) {
@@ -242,16 +278,19 @@ function CreateTable(attributes, tBody, table, objectIdField, displayFields) {
     var parcelID = attributes[displayFields[0]];
     td.innerHTML = parcelID;
     td.style.width = "100px";
-    //td.className = 'bottomborder';
     var td1 = document.createElement("td");
     var postalAddress = attributes[displayFields[1]];
     td1.innerHTML = postalAddress;
-    //td1.className = 'bottomborder';
+    tr.setAttribute("addressValue", postalAddress);
     if (!isMobileDevice) {
         td.className = 'bottomborder';
         td1.className = 'bottomborder';
     }
     tr.onclick = function () {
+        dojo.byId("txtAddress").value = this.getAttribute("addressValue");
+        lastSearchString = dojo.byId("txtAddress").value.trim();
+        dojo.byId('txtAddress').setAttribute("defaultAddress", this.getAttribute("addressValue"));
+        dojo.byId("txtAddress").setAttribute("defaultAddressTitle", this.getAttribute("addressValue"));
 
         tr.className = "selectedAddress";
         if (isMobileDevice) {
@@ -260,10 +299,9 @@ function CreateTable(attributes, tBody, table, objectIdField, displayFields) {
 
         dojo.query('.selectedAddress', table).forEach(dojo.hitch(this, function (node, idx, arr) {
             node.bgColor = "";
-
         }));
         tr.bgColor = selectedAddressColor;
-        LocateParcelonMap(this.getAttribute("objectId"), null);
+        LocateParcelonMap(this.getAttribute("parcelId"), null, this.getAttribute("objectId"));
     }
 
     tr.appendChild(td);
@@ -277,25 +315,29 @@ function SortResultFeatures(a, b) {
     return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 }
 
-function LocateParcel(objectId, mapPoint) {
+//Locate parcel
+function LocateParcel(parcelId, mapPoint, objectId) {
     map.getLayer(tempLayerId).clear();
     dojo.query('.selectedAddress', dojo.byId("tblAddressResults")).forEach(function (node, idx, arr) {
         node.bgColor = "";
     });
-    LocateParcelonMap(objectId, mapPoint)
+    LocateParcelonMap(parcelId, mapPoint, objectId)
 }
 
-function LocateParcelonMap(objectId, mapPoint) {
+//Locate parcel on map
+function LocateParcelonMap(parcelId, mapPoint, objectId) {
     map.infoWindow.hide();
+    selectedGraphic = null;
     dojo.byId('txtSelectedLayout').value = "";
     dojo.byId('txtMapTitle').value = "";
     map.getLayer(tempParcelLayerId).clear();
     for (var i = 0; i < layers.length; i++) {
-        QueryParcel(layers[i], objectId, mapPoint);
+        QueryParcel(layers[i], parcelId, mapPoint, objectId);
     }
 }
 
-function QueryParcel(layer, objectId, mapPoint) {
+//Query parcel for parcel information
+function QueryParcel(layer, parcelId, mapPoint, objectId) {
     if (!layer.isDynamicMapService) {
         var queryTask = new esri.tasks.QueryTask(layer.ServiceURL);
         var query = new esri.tasks.Query();
@@ -303,28 +345,34 @@ function QueryParcel(layer, objectId, mapPoint) {
         query.outSpatialReference = map.spatialReference;
         query.returnGeometry = false;
         query.outFields = [layer.OutFields];
+
         if (mapPoint) {
             query.geometry = mapPoint;
         }
         else {
-            query.objectIds = [objectId];
+            var relationshipId;
+            parcelAttributeID.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g, function (match, key) {
+                relationshipId = key;
+            });
+
+            query.where = relationshipId + " in ('" + parcelId + "')";
         }
         query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_INTERSECTS;
         ShowProgressIndicator();
         queryTask.execute(query, function (featureSet) {
             if (featureSet.features.length == 0) {
-                HideProgressIndicator();
                 alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
+                HideProgressIndicator();            
                 return;
             }
             var query1 = new esri.tasks.Query();
             query1.outSpatialReference = map.spatialReference;
-            query1.where = dojo.string.substitute(layer.LocateParcelQuery, [featureSet.features[0].attributes[parcelAttributeID]]);
+            query1.where = dojo.string.substitute(layer.LocateParcelQuery, [dojo.string.substitute(parcelAttributeID, featureSet.features[0].attributes)]);
             query1.returnGeometry = true;
             query1.outFields = ["*"];
             queryTask.execute(query1, function (results) {
                 if (results.features.length == 0) {
-                    HideProgressIndicator();
+                    HideProgressIndicator();               
                     RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
                     RemoveChildren(dojo.byId("tblAddressResults"));
                     alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
@@ -367,7 +415,7 @@ function QueryParcel(layer, objectId, mapPoint) {
                             if (featureSet.features.length == 1) {
                                 for (var i in results.features[0].attributes) {
                                     if (!results.features[0].attributes[i]) {
-                                        results.features[0].attributes[i]=showNullValueAs;
+                                        results.features[0].attributes[i] = showNullValueAs;
                                     }
                                 }
 
@@ -395,6 +443,7 @@ function QueryParcel(layer, objectId, mapPoint) {
                 }
             });
         }, function (err) {
+            debugger;
             HideProgressIndicator();
             RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
             RemoveChildren(dojo.byId("tblAddressResults"));
@@ -403,6 +452,7 @@ function QueryParcel(layer, objectId, mapPoint) {
     }
 }
 
+//Plotting parcel on map
 function AddParcelToMap(feature, mapPoint) {
     var graphic;
     for (var j = 0; j < layers.length; j++) {
@@ -425,10 +475,8 @@ function AddParcelToMap(feature, mapPoint) {
     (isMobileDevice) ? map.setExtent(GetMobileMapExtent(selectedGraphic)) : map.setExtent(GetBrowserMapExtent(mapPoint));
 }
 
-//function to show parcel list
+//Show parcel list
 function ShowParcelList(mapPoint, featureSet, geometry, queryTask, whereCondition) {
-    RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
-    RemoveChildren(dojo.byId("tblAddressResults"));
     dojo.byId("divParcelDataScrollContainer").style.display = "block";
     dojo.byId("divNeighborhoodContainer").style.display = "none";
     dojo.byId("divBroadbandContainer").style.display = "none";
@@ -450,10 +498,15 @@ function ShowParcelList(mapPoint, featureSet, geometry, queryTask, whereConditio
         tr.className = "trRowHeight";
         tBody.appendChild(tr);
         var td = document.createElement("td");
-        var parcelID = dojo.string.substitute(infoWindowContent, featureSet[i].attributes)
+        var parcelID = dojo.string.substitute(infoWindowContent, featureSet[i].attributes);
         td.innerHTML = parcelID;
+        if (i == 0) {
+            selectedParcel = dojo.string.substitute(parcelAttributeID, featureSet[0].attributes);
+            dojo.byId("tdParcelId").innerHTML = selectedParcel;
+            dojo.byId("tdTaxParcelId").innerHTML = selectedParcel;
+        }
         var td1 = document.createElement("td");
-        var postalAddress = dojo.string.substitute(infoWindowHeader, featureSet[i].attributes)
+        var postalAddress = dojo.string.substitute(infoWindowHeader, featureSet[i].attributes);
         td1.innerHTML = postalAddress;
 
         td.style.cursor = "pointer";
@@ -462,7 +515,7 @@ function ShowParcelList(mapPoint, featureSet, geometry, queryTask, whereConditio
         tr.onclick = function () {
             var query1 = new esri.tasks.Query();
             query1.outSpatialReference = map.spatialReference;
-            query1.where = dojo.string.substitute(whereCondition, [featureSet[this.sectionRowIndex].attributes[parcelAttributeID]]); // "PARCELID = '" + featureSet[this.sectionRowIndex].attributes[parcelAttributeID] + "'";
+            query1.where = dojo.string.substitute(whereCondition, [dojo.string.substitute(parcelAttributeID, featureSet[this.sectionRowIndex].attributes)]);
             query1.returnGeometry = true;
             query1.outFields = ["*"];
             ShowProgressIndicator();
@@ -502,14 +555,13 @@ function ShowParcelList(mapPoint, featureSet, geometry, queryTask, whereConditio
     }
 }
 
-//function to set height and create scrollbar for address results
+//Set height and create scrollbar for address results
 function SetHeightAddressResults() {
     var height = (isMobileDevice) ? dojo.window.getBox().h - 150 : map.height - 55;
     if (!isMobileDevice) {
         dojo.byId('divAddressScrollContent').style.height = (height - 120) + "px";
     }
-
-    if (isMobileDevice) {
+    else {
         dojo.byId('divAddressScrollContent').style.height = height + "px";
     }
     setTimeout(function () {
@@ -518,7 +570,7 @@ function SetHeightAddressResults() {
 
 }
 
-//function to set height for parcel data container
+//Set height for parcel data container
 function SetHeightParcelData() {
     var height = (isMobileDevice) ? dojo.window.getBox().h : dojo.coords(dojo.byId('divParcelScrollContent')).h;
 
@@ -534,7 +586,7 @@ function SetHeightParcelData() {
     }, 1000);
 }
 
-//function to show the infoWindow for parcel
+//Display the infoWindow for parcel
 function ShowParcelInfoWindow(attributes, mapPoint, parcelId) {
     RemoveScrollBar(dojo.byId('divFeatureDataScrollbarContainer'));
     RemoveChildren(dojo.byId('divFeatureDataScrollbarContent'));
@@ -553,7 +605,6 @@ function ShowParcelInfoWindow(attributes, mapPoint, parcelId) {
             var parcelInfoWindowFields = layers[i].Fields;
 
             for (var index in parcelInfoWindowFields) {
-
                 var tr = document.createElement("tr");
                 tbody.appendChild(tr);
                 var td = document.createElement("td");
@@ -619,16 +670,15 @@ String.prototype.endsWith = function (s) {
     return this.length >= s.length && this.substr(this.length - s.length) == s;
 }
 
-//function to populate parcel information
+//Populate parcel information
 function PopulateParcelInformation(mapPoint, feature, featureLength, geometry) {
-    selectedParcel = feature.attributes[parcelAttributeID];
+    selectedParcel = dojo.string.substitute(parcelAttributeID, feature.attributes);
     selectedFeature = feature;
     dojo.byId("tdParcelId").innerHTML = selectedParcel;
     dojo.byId("tdTaxParcelId").innerHTML = selectedParcel;
     if (featureLength > 1) {
         dojo.byId("tdList").style.display = "block";
     }
-
     for (var i in neighbourHoodLayerInfo) {
         if (map.getLayer(neighbourHoodLayerInfo[i].id).maxScale <= ((mapScale) ? mapScale : Number(dojo.byId("divShareContainer").getAttribute("mapScale"))) && map.getLayer(neighbourHoodLayerInfo[i].id).minScale >= ((mapScale) ? mapScale : Number(dojo.byId("divShareContainer").getAttribute("mapScale")))) {
             PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], mapPoint, null);
@@ -641,7 +691,7 @@ function PopulateParcelInformation(mapPoint, feature, featureLength, geometry) {
         var point = newPoint[0];
         var location = { "latitude": point.y, "longitude": point.x };
         for (var i = 0; i < broadBandService.length; i++) {
-            PopulateBroadBandInformation(broadBandService[i], location, null);
+            PopulateBroadBandInformation(broadBandService[i], location, null, false);
         }
     });
 
@@ -655,7 +705,5 @@ function PopulateParcelInformation(mapPoint, feature, featureLength, geometry) {
         }
     }
     ShowParcelInfoWindow(feature.attributes, mapPoint, null);
-
     FixTabWidth();
-
 }
