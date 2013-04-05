@@ -515,7 +515,7 @@ dojo.declare("js.config", null, {
               TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
               TinyURLResponseAttribute: "data.url",
               FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Tax%20Viewer%20Map",
-              TwitterShareURL: "http://twitter.com/home/?status=Tax%20Viewer%20Map ${0}",
+              TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Tax%20Viewer%20Map ${0}",              
               ShareByMailLink: "mailto:%20?subject=Tax%20Viewer%20Map&body=${0}"
           }
 });
