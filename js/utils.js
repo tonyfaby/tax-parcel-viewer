@@ -18,6 +18,7 @@ var isOrientationChanged = false; //variable to store the flag on orientation
 var tinyResponse; //variable to store the response getting from tiny url api
 var tinyUrl; //variable to store the tiny url
 var popupWin; //variable to store the paypal popup window object
+var taxLayerCount = 0; //variable to store the info layers count
 
 //Handles orientation change event
 function OrientationChanged() {
@@ -31,7 +32,7 @@ function OrientationChanged() {
             dojo.byId('divTabBar').style.display = "none";
         }
         setTimeout(function () {
-            if (isMobileDevice) {                
+            if (isMobileDevice) {
                 SetHeightAddressResults();
                 SetHeightParcelData();
                 SetHeightSplashScreen();
@@ -69,14 +70,14 @@ function resizeHandler() {
 
 //function to fix tab width
 function FixTabWidth() {
-    if (isMobileDevice) {   
+    if (isMobileDevice) {
         setTimeout(function () {
             dojo.byId('divTabBar').style.display = "block";
             var tabWidth = Math.round(dojo.window.getBox().w / 3);
             dojo.byId('divTabBar').style.width = Math.round((dojo.window.getBox().w - 20)) + "px";
             dojo.query('.mblTabButton', dojo.byId('divTabBar')).forEach(function (node, idx, arr) {
                 node.style.width = (tabWidth - 14) + "px";
-            });       
+            });
         }, 1000);
     }
 }
@@ -167,7 +168,7 @@ function ShareLink(ext) {
     var url = esri.urlToObject(window.location.toString());
     var urlStr = encodeURI(url.path) + "?extent=" + mapExtent;
     for (var i = 0; i < layers.length; i++) {
-        if (!layers[i].isDynamicMapService) {
+        if (layers[i].ParcelQuery) {
             if (map.getLayer(tempParcelLayerId).graphics.length > 0) {
                 urlStr = encodeURI(url.path) + "?parcelId=" + dojo.string.substitute(parcelAttributeID, map.getLayer(tempParcelLayerId).graphics[0].attributes);
             }
@@ -947,7 +948,7 @@ function CreateDynamicServiceLayer(layerURL, layerIndex, layerId, isVisible, dis
 
             var td = document.createElement("td");
 
-            var checkbox = CreateCheckBox(layerId, layerIndex, false);
+            var checkbox = CreateCheckBox(layerId, layerIndex, isVisible);
 
             checkbox.onclick = function () {
                 if (this.getAttribute("state") == "check") {
@@ -1061,13 +1062,12 @@ function ShowFeatureInfoWindow(mapPoint) {
     RemoveScrollBar(dojo.byId("divParcelDataScrollContainer"));
     dojo.byId("divFeatureDataScrollbarContainer").style.display = "block";
     RemoveChildren(dojo.byId('divFeatureDataScrollbarContent'));
+    taxLayerCount = 0;
     dojo.query('img[state = "check"]', dojo.byId('divLayers')).forEach(function (node, index, arr) {
         layerCount++;
         QueryLayer(node, mapPoint);
     });
 }
-
-
 
 //Query data for sales/foreclosure layers
 function QueryLayer(node, mapPoint) {
@@ -1080,7 +1080,7 @@ function QueryLayer(node, mapPoint) {
     query.geometry = ExtentFromPoint(mapPoint);
     query.maxAllowableOffset = MaxOffSet();
     query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_INTERSECTS;
-    queryTask.execute(query, function (results) {
+    queryTask.execute(query, function (results) {        
         responseCount++
         if (results.features.length == 0) {
             if (layerCount == responseCount) {
@@ -1088,6 +1088,19 @@ function QueryLayer(node, mapPoint) {
             }
             return;
         }
+        taxLayerCount++;
+
+        if (taxLayerCount == dojo.query('img[state = "check"]', dojo.byId('divLayers')).length) {
+            for (var ord = 0; ord < layers.length; ord++) {
+                if (!layers[ord].ParcelQuery) {
+                    var visibleLayer = layers[ord].Title;
+                }
+            }
+            if (layerInfo.Title != visibleLayer) {
+                return;
+            }
+        }
+
         responseCount = 0;
         selectedGraphic = results.features[0].geometry;
         RemoveChildren(dojo.byId('divFeatureDataScrollbarContent'));
@@ -1378,8 +1391,8 @@ function CallParcelGPService(parcelId, reportType) {
     var reportData = pdfData[parcelId][reportType]["AttributeInfo"] + "~" + pdfData[parcelId][reportType]["NeighbourhoodInfo"] + "~" + broadbandInfo.join("#");
 
     for (var i = 0; i < layers.length; i++) {
-        if (!layers[i].isDynamicMapService) {
-            var taxServiceURL = layers[i].ServiceURL;          
+        if (layers[i].ParcelQuery) {
+            var taxServiceURL = layers[i].ServiceURL;
             var taxServiceOpacity = layers[i].Alpha;
             var taxServiceColor = new dojo.Color(layers[i].Color);
             var taxParcelColor = [];
@@ -1620,14 +1633,13 @@ function ToggleSelectedLayoutList() {
 function CreatePDF(reportType) {
     var feature = map.getLayer(tempParcelLayerId).graphics;
 
-
     if (feature.length == 0) {
         alert(messages.getElementsByTagName("selectParcel")[0].childNodes[0].nodeValue);
         return;
     }
     feature = selectedFeature;
     for (var i = 0; i < layers.length; i++) {
-        if (!layers[i].isDynamicMapService) {
+        if (layers[i].ParcelQuery) {
             ShowProgressIndicator();
 
             if (reportType == "PropertyMap") {
@@ -1678,7 +1690,7 @@ function CreatePDF(reportType) {
             pdfData[parcelId][reportType]["Graphic"] = graphic;
 
             for (var i = 0; i < layers.length; i++) {
-                if (!layers[i].isDynamicMapService) {
+                if (layers[i].ParcelQuery) {
                     pdfData[parcelId][reportType]["objId"] = feature.attributes[map.getLayer(layers[i].Key).objectIdField];
                     break;
                 }

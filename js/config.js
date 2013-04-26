@@ -105,7 +105,7 @@ dojo.declare("js.config", null, {
 		       ],
 
 
-    // Initial map extent. Use comma (,) to separate values and dont delete the last comma
+    // Initial map extent. Use comma (,) to separate values and don't delete the last comma
     DefaultExtent: "-9273520,5249870,-9270620,5251510",
 
     // ------------------------------------------------------------------------------------------------------------------------
@@ -208,9 +208,9 @@ dojo.declare("js.config", null, {
                 {
                     Key: "foreClosure",
                     Title: "Foreclosures",
-                    ServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/AssessmentOperations/MapServer/0",
+                    ServiceURL: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/AssessmentOperationsHOST/FeatureServer/0",
                     isVisible: false,
-                    isDynamicMapService: true,
+                    isDynamicMapService: false,
                     Fields:
                 [
                     {
@@ -257,13 +257,13 @@ dojo.declare("js.config", null, {
                     }
 
               ]
-                },
+      },
       {
           Key: "parcelSale",
           Title: "Sales",
-          ServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/AssessmentOperations/MapServer/1",
+          ServiceURL: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/AssessmentOperationsHOST/FeatureServer/1",
           isVisible: false,
-          isDynamicMapService: true,
+          isDynamicMapService: false,
           Fields:
                 [
                     {
@@ -488,7 +488,7 @@ dojo.declare("js.config", null, {
 
     // ------------------------------------------------------------------------------------------------------------------------
     //Set configuration item to allow users to turn the "Parcel Markups" off and on.
-    ParcelMarkups:true,
+    ParcelMarkups: true,
 
     // ------------------------------------------------------------------------------------------------------------------------
     //SETTING FOR REPORT LAYOUTS
@@ -515,7 +515,7 @@ dojo.declare("js.config", null, {
               TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
               TinyURLResponseAttribute: "data.url",
               FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Tax%20Viewer%20Map",
-              TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Tax%20Viewer%20Map ${0}",              
+              TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Tax%20Viewer%20Map ${0}",
               ShareByMailLink: "mailto:%20?subject=Tax%20Viewer%20Map&body=${0}"
           }
 });

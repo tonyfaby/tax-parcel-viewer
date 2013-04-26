@@ -231,6 +231,76 @@ function init() {
         }
         mapExtent = new esri.geometry.Extent(parseFloat(mapExtent[0]), parseFloat(mapExtent[1]), parseFloat(mapExtent[2]), parseFloat(mapExtent[3]), map.spatialReference);
         map.setExtent(mapExtent);
+
+        var query = new esri.tasks.Query();
+        query.where = "1=1";
+        query.outFields = ["*"];
+        query.returnGeometry = true;
+        for (var i = 0; i < layers.length; i++) {
+            if (!layers[i].ParcelQuery) {
+                if (!layers[i].isDynamicMapService) {
+                    map.getLayer(layers[i].Key).selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW, function (feature) {
+                        var table = document.createElement("table");
+                        var tbody = document.createElement("tbody");
+                        table.appendChild(tbody);
+                        var tr = document.createElement("tr");
+                        tbody.appendChild(tr);
+
+                        var td = document.createElement("td");
+                        var lastindex = feature[0]._graphicsLayer.url.lastIndexOf('/');
+                        var checkbox = CreateCheckBox(feature[0]._graphicsLayer.id, feature[0]._graphicsLayer.url.substr(lastindex + 1), feature[0]._graphicsLayer.visible);
+
+                        checkbox.onclick = function () {
+                            if (this.getAttribute("state") == "check") {
+                                this.src = "images/unchecked.png";
+                                this.setAttribute("state", "uncheck");
+                                map.getLayer(feature[0]._graphicsLayer.id).hide();
+                                map.infoWindow.hide();
+                            }
+                            else {
+                                this.src = "images/checked.png";
+                                this.setAttribute("state", "check");
+                                ShowProgressIndicator();
+                                map.getLayer(feature[0]._graphicsLayer.id).show();
+                                map.infoWindow.hide();
+                                selectedGraphic = null;
+                                map.getLayer(tempLayerId).clear();
+                                map.getLayer(tempParcelLayerId).clear();
+                            }
+                            HideProgressIndicator();
+                        };
+
+                        td.appendChild(checkbox);
+                        tr.appendChild(td);
+
+                        td = document.createElement("td");
+                        var img = document.createElement("img");
+                        img.src = feature[0]._graphicsLayer.url + '/images/' + map.getLayer(feature[0]._graphicsLayer.id).renderer.getSymbol().imageData;
+                        if (isMobileDevice) {
+                            img.style.width = "44px";
+                            img.style.height = "44px";
+                        }
+                        else {
+                            img.style.width = "20px";
+                            img.style.height = "20px";
+                        }
+                        td.appendChild(img);
+
+                        tr.appendChild(td);
+
+                        td = document.createElement("td");
+                        for (var t = 0; t < layers.length; t++) {
+                            if (layers[t].Key == feature[0]._graphicsLayer.id) {
+                                td.appendChild(document.createTextNode(layers[t].Title));
+                                break;
+                            }
+                        }
+                        tr.appendChild(td);
+                        dojo.byId('divLayers').appendChild(table);
+                    });
+                }
+            }
+        }
     });
 
     dojo.connect(dojo.byId('help'), "onclick", function () {
@@ -322,24 +392,9 @@ function MapInitFunction() {
                 mode: esri.layers.FeatureLayer.MODE_SELECTION,
                 outFields: ["*"],
                 id: layers[i].Key,
-                displayOnPan: false
-            });
-
-            dojo.connect(map, "onExtentChange", function (evt) {
-                mapScale = map.getLayer(baseMapLayers[0].Key).tileInfo.lods[map.getLevel()].scale;
-                dojo.byId("divShareContainer").setAttribute("mapScale", mapScale);
-                if (dojo.coords("divShareContainer").h > 0) {
-                    ShareLink(false);
-                }
-                if (!isOrientationChanged) {
-                    if (selectedGraphic) {
-                        var screenPoint = map.toScreen(selectedGraphic);
-                        screenPoint.y = map.height - screenPoint.y;
-                        map.infoWindow.setLocation(screenPoint);
-                        return;
-                    }
-                }
-            });
+                displayOnPan: false,
+                visible: layers[i].isVisible
+            });        
 
             if (layers[i].UseColor) {
                 var customLFillSymbol = new esri.symbol.SimpleFillSymbol();
@@ -348,33 +403,48 @@ function MapInitFunction() {
                 customLFillSymbol.setColor(customFillColor);
                 var customRenderer = new esri.renderer.SimpleRenderer(customLFillSymbol);
                 featureLayer.setRenderer(customRenderer);
-
+                FixTabWidth();
             }
-            map.addLayer(featureLayer);
-
-            FixTabWidth();
-            dojo.connect(map, "onClick", function (evt) {
-                if (draw) {
-                    map.infoWindow.hide();
-                    selectedGraphic = null;
-                    return;
-                }
-                selectedGraphic = null;
-
-                var checked = dojo.query('img[state = "check"]', dojo.byId('divLayers'));
-                if (!draw) {
-                    if (checked.length == 0) {
-                        LocateParcel(null, evt.mapPoint, null)
-                        return;
-                    }
-                }
-                if (!isMobileDevice) {
-                    dojo.byId("divParcelInformation").style.display = "none";
-                    dojo.byId("divFeatureInformation").style.display = "none";
-                }
-                ShowFeatureInfoWindow(evt.mapPoint);
-            });
+            map.addLayer(featureLayer);            
         }
     }
+
+    dojo.connect(map, "onExtentChange", function (evt) {
+        mapScale = map.getLayer(baseMapLayers[0].Key).tileInfo.lods[map.getLevel()].scale;
+        dojo.byId("divShareContainer").setAttribute("mapScale", mapScale);
+        if (dojo.coords("divShareContainer").h > 0) {
+            ShareLink(false);
+        }
+        if (!isOrientationChanged) {
+            if (selectedGraphic) {
+                var screenPoint = map.toScreen(selectedGraphic);
+                screenPoint.y = map.height - screenPoint.y;
+                map.infoWindow.setLocation(screenPoint);
+                return;
+            }
+        }
+    });
+
+    dojo.connect(map, "onClick", function (evt) { 
+        if (draw) {
+            map.infoWindow.hide();
+            selectedGraphic = null;
+            return;
+        }
+        selectedGraphic = null;
+
+        var checked = dojo.query('img[state = "check"]', dojo.byId('divLayers'));
+        if (!draw) {
+            if (checked.length == 0) {               
+                LocateParcel(null, evt.mapPoint, null)
+                return;
+            }
+        }
+        if (!isMobileDevice) {
+            dojo.byId("divParcelInformation").style.display = "none";
+            dojo.byId("divFeatureInformation").style.display = "none";
+        }
+        ShowFeatureInfoWindow(evt.mapPoint);
+    });
 }
 dojo.addOnLoad(init);

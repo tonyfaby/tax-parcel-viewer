@@ -22,14 +22,13 @@ function LocateAddress() {
         RemoveChildren(dojo.byId('divAddressHeader'));
         CreateScrollbar(dojo.byId("divAddressScrollContainer"), dojo.byId("divAddressScrollContent"));
         if (dojo.byId("txtAddress").value != "") {
-            alert(messages.getElementsByTagName("blankParcel")[0].childNodes[0].nodeValue);    
+            alert(messages.getElementsByTagName("blankParcel")[0].childNodes[0].nodeValue);
         }
         return;
     }
 
-
     for (var i = 0; i < layers.length; i++) {
-        if (!layers[i].isDynamicMapService) {
+        if (layers[i].ParcelQuery) {
             LocateParcelData(layers[i]);
         }
     }
@@ -337,8 +336,8 @@ function LocateParcelonMap(parcelId, mapPoint, objectId) {
 }
 
 //Query parcel for parcel information
-function QueryParcel(layer, parcelId, mapPoint, objectId) {
-    if (!layer.isDynamicMapService) {
+function QueryParcel(layer, parcelId, mapPoint, objectId) {   
+    if (layer.ParcelQuery) {
         var queryTask = new esri.tasks.QueryTask(layer.ServiceURL);
         var query = new esri.tasks.Query();
 
@@ -362,7 +361,7 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
         queryTask.execute(query, function (featureSet) {
             if (featureSet.features.length == 0) {
                 alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
-                HideProgressIndicator();            
+                HideProgressIndicator();
                 return;
             }
             var query1 = new esri.tasks.Query();
@@ -372,7 +371,7 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
             query1.outFields = ["*"];
             queryTask.execute(query1, function (results) {
                 if (results.features.length == 0) {
-                    HideProgressIndicator();               
+                    HideProgressIndicator();
                     RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
                     RemoveChildren(dojo.byId("tblAddressResults"));
                     alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
@@ -386,6 +385,7 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
                         mapPoint = polygon.getPoint(0, 0);
                     }
                 }
+             
                 if (!isMobileDevice) {
                     if (featureSet.features.length == 1) {
                         dojo.byId("tdList").style.display = "none";
@@ -442,8 +442,7 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
                     }
                 }
             });
-        }, function (err) {
-            debugger;
+        }, function (err) {       
             HideProgressIndicator();
             RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
             RemoveChildren(dojo.byId("tblAddressResults"));
@@ -456,7 +455,7 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
 function AddParcelToMap(feature, mapPoint) {
     var graphic;
     for (var j = 0; j < layers.length; j++) {
-        if (!layers[j].isDynamicMapService) {
+        if (layers[j].ParcelQuery) {
             if (layers[j].UseColor) {
                 var lineColor = new dojo.Color();
                 lineColor.setColor(layers[j].Color);
@@ -601,7 +600,7 @@ function ShowParcelInfoWindow(attributes, mapPoint, parcelId) {
     table.appendChild(tbody);
 
     for (var i = 0; i < layers.length; i++) {
-        if (!layers[i].isDynamicMapService) {
+        if (layers[i].ParcelQuery) {
             var parcelInfoWindowFields = layers[i].Fields;
 
             for (var index in parcelInfoWindowFields) {
