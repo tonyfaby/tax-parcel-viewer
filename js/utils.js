@@ -120,7 +120,7 @@ function ShowBaseMaps() {
         dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
         dojo.byId('divShareContainer').style.height = '0px';
     }
-    var cellHeight = (isMobileDevice) ? 10 : 115;
+    var cellHeight = (isMobileDevice) ? 10 : 92;
 
     if (dojo.hasClass('divLayerContainer', "showContainerHeight")) {
         dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
@@ -128,10 +128,18 @@ function ShowBaseMaps() {
     }
     else {
         if (isMobileDevice) {
-            dojo.byId('divLayerContainer').style.height = Math.ceil(baseMapLayers.length / 2) * cellHeight + Math.ceil(layers.length / 2) * 50 + "px";
+            dojo.byId('divLayerContainer').style.height =
+                10  // Top buffer
+                + layers.length * 53  // layers
+                + "px";
         }
         else {
-            dojo.byId('divLayerContainer').style.height = Math.ceil(baseMapLayers.length / 2) * cellHeight + Math.ceil(layers.length / 2) * 25 + "px";
+            dojo.byId('divLayerContainer').style.height =
+                8  // Top buffer
+                + Math.ceil(baseMapLayers.length / 2) * cellHeight  // basemaps
+                + 18  // "Layers" separator
+                + layers.length * 29  // layers
+                + "px";
         }
         dojo.replaceClass("divLayerContainer", "showContainerHeight", "hideContainerHeight");
     }
@@ -858,6 +866,7 @@ function CreateDynamicServiceLayer(layerURL, layerIndex, layerId, isVisible, dis
         imageParameters: imageParams,
         visible: isVisible
     });
+    var initiallyVisible = isVisible;
 
     dojo.io.script.get({
         url: layerURL + '?f=json',
@@ -877,7 +886,7 @@ function CreateDynamicServiceLayer(layerURL, layerIndex, layerId, isVisible, dis
 
             var td = document.createElement("td");
 
-            var checkbox = CreateCheckBox(layerId, layerIndex, false);
+            var checkbox = CreateCheckBox(layerId, layerIndex, initiallyVisible);
 
             checkbox.onclick = function () {
                 if (this.getAttribute("state") == "check") {
@@ -904,7 +913,11 @@ function CreateDynamicServiceLayer(layerURL, layerIndex, layerId, isVisible, dis
 
             td = document.createElement("td");
             var img = document.createElement("img");
-            img.src = layerURL + '/images/' + data.drawingInfo.renderer.symbol.url;
+            try {
+                img.src = layerURL + '/images/' + data.drawingInfo.renderer.symbol.url;
+            } catch(err) {
+                img.src = "images/polygonIcon.png";
+            }
             if (isMobileDevice) {
                 img.style.width = "44px";
                 img.style.height = "44px";
