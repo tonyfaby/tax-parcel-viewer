@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="paypal.aspx.cs" Inherits="_Default" %>
 <!--
- | Version 10.1.1
+ | Version 10.2
  | Copyright 2012 Esri
  |
  | Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,15 +44,15 @@
     <div style="width: 100%; height: 100%; position: absolute; top: 80px; color: black">
         <table style="width: 100%;">
             <tr style="width: 100%;">
-                <td align="center" colspan="2">
+                <td align="center" colspan="2" style="color:#000">
                    Please copy this code to download the property report/map. This code is valid for single use only.
                 </td>
             </tr>
             <tr>
-                <td align="right">
+                <td align="right" style="color:#000">
                     Validation Code: &nbsp;
                 </td>
-                <td align="left">
+                <td align="left" style="color:#000">
                     <asp:Label ID="lblValidationCode" runat="server"></asp:Label>
                 </td>
             </tr>
