@@ -45,7 +45,7 @@ on the ArcGIS Resource Center can guide you in the setup and configuration of th
 
 Learn more about Esri's [ArcGIS for Local Government maps and apps](http://resources.arcgis.com/en/communities/local-government/).
 
-Show me a list of other [Local Government GitHub repositories](https://github.com/search?q=username:esri+local+government).
+Show me a list of other [Local Government GitHub repositories](http://esri.github.io/#Local-Government).
 
 Additional [information and sample data](http://www.arcgis.com/home/item.html?id=bb2d4076b0ab434badca56c55dada314)
 are available for the application.
@@ -81,5 +81,5 @@ limitations under the License.
 A copy of the license is available in the repository's
 [license.txt](https://raw.github.com/Esri/tax-parcel-viewer/master/license.txt) file.
 
-[](Esri Tags: Local Government Tax Parcel Viewer)
+[](Esri Tags: Local-Government Local Government Tax Parcel Viewer)
 [](Esri Language: JavaScript)

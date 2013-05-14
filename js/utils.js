@@ -1,19 +1,19 @@
 ﻿/** @license
-| Version 10.1.1
-| Copyright 2012 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Version 10.2
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 var isOrientationChanged = false; //variable to store the flag on orientation
 var tinyResponse; //variable to store the response getting from tiny url api
 var tinyUrl; //variable to store the tiny url
@@ -275,7 +275,7 @@ function HideSplashScreenMessage() {
                     clearTimeout(stagedSearch);
 
                     if (dojo.byId("txtAddress").value.trim().length > 0) {
-                        // Stage a new search, which will launch if no new searches show up 
+                        // Stage a new search, which will launch if no new searches show up
                         // before the timeout
                         stagedSearch = setTimeout(function () {
                             dojo.byId("imgSearchLoader").style.display = "block";
@@ -337,43 +337,43 @@ function HideProgressIndicator() {
 function ShowMyLocation() {
     map.getLayer(tempLayerId).clear();
     navigator.geolocation.getCurrentPosition(
-		function (position) {
-		    ShowProgressIndicator('map');
-		    var mapPoint = new esri.geometry.Point(position.coords.longitude, position.coords.latitude, new esri.SpatialReference({ wkid: 4326 }));
-		    var graphicCollection = new esri.geometry.Multipoint(new esri.SpatialReference({ wkid: 4326 }));
-		    graphicCollection.addPoint(mapPoint);
-		    geometryService.project([graphicCollection], map.spatialReference, function (newPointCollection) {
-		        HideProgressIndicator();
+        function (position) {
+            ShowProgressIndicator('map');
+            var mapPoint = new esri.geometry.Point(position.coords.longitude, position.coords.latitude, new esri.SpatialReference({ wkid: 4326 }));
+            var graphicCollection = new esri.geometry.Multipoint(new esri.SpatialReference({ wkid: 4326 }));
+            graphicCollection.addPoint(mapPoint);
+            geometryService.project([graphicCollection], map.spatialReference, function (newPointCollection) {
+                HideProgressIndicator();
 
-		        if (!map.getLayer(layers[0].Key).fullExtent.contains(newPointCollection[0].getPoint(0))) {
-		            alert(messages.getElementsByTagName("outsideArea")[0].childNodes[0].nodeValue);
-		            return;
-		        }
-		        mapPoint = newPointCollection[0].getPoint(0);
-		        map.centerAt(mapPoint);
-		        var symbol = new esri.symbol.PictureMarkerSymbol(geolocatedImage, 25, 25);
-		        var graphic = new esri.Graphic(mapPoint, symbol, null, null);
-		        map.getLayer(tempLayerId).add(graphic);
-		        LocateParcelonMap(null, mapPoint);
-		    });
-		},
-		function (error) {
-		    HideProgressIndicator();
-		    switch (error.code) {
-		        case error.TIMEOUT:
-		            alert(messages.getElementsByTagName("timeOut")[0].childNodes[0].nodeValue);
-		            break;
-		        case error.POSITION_UNAVAILABLE:
-		            alert(messages.getElementsByTagName("positionUnavailable")[0].childNodes[0].nodeValue);
-		            break;
-		        case error.PERMISSION_DENIED:
-		            alert(messages.getElementsByTagName("permissionDenied")[0].childNodes[0].nodeValue);
-		            break;
-		        case error.UNKNOWN_ERROR:
-		            alert(messages.getElementsByTagName("unknownError")[0].childNodes[0].nodeValue);
-		            break;
-		    }
-		}, { timeout: 5000 });
+                if (!map.getLayer(layers[0].Key).fullExtent.contains(newPointCollection[0].getPoint(0))) {
+                    alert(messages.getElementsByTagName("outsideArea")[0].childNodes[0].nodeValue);
+                    return;
+                }
+                mapPoint = newPointCollection[0].getPoint(0);
+                map.centerAt(mapPoint);
+                var symbol = new esri.symbol.PictureMarkerSymbol(geolocatedImage, 25, 25);
+                var graphic = new esri.Graphic(mapPoint, symbol, null, null);
+                map.getLayer(tempLayerId).add(graphic);
+                LocateParcelonMap(null, mapPoint);
+            });
+        },
+        function (error) {
+            HideProgressIndicator();
+            switch (error.code) {
+                case error.TIMEOUT:
+                    alert(messages.getElementsByTagName("timeOut")[0].childNodes[0].nodeValue);
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert(messages.getElementsByTagName("positionUnavailable")[0].childNodes[0].nodeValue);
+                    break;
+                case error.PERMISSION_DENIED:
+                    alert(messages.getElementsByTagName("permissionDenied")[0].childNodes[0].nodeValue);
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert(messages.getElementsByTagName("unknownError")[0].childNodes[0].nodeValue);
+                    break;
+            }
+        }, { timeout: 5000 });
 }
 
 //Get the query string value of the provided key if not found the function returns empty string
@@ -1080,7 +1080,7 @@ function QueryLayer(node, mapPoint) {
     query.geometry = ExtentFromPoint(mapPoint);
     query.maxAllowableOffset = MaxOffSet();
     query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_INTERSECTS;
-    queryTask.execute(query, function (results) {        
+    queryTask.execute(query, function (results) {
         responseCount++
         if (results.features.length == 0) {
             if (layerCount == responseCount) {

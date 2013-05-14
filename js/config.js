@@ -1,19 +1,19 @@
 ﻿/** @license
-| Version 10.1.1
-| Copyright 2012 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Version 10.2
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 dojo.provide("js.config");
 dojo.declare("js.config", null, {
 
@@ -82,7 +82,7 @@ dojo.declare("js.config", null, {
     // Set baseMap layers
     // Please note: All basemaps need to use the same spatial reference. By default, on application start the first basemap will be loaded
     BaseMapLayers:
-		       [
+               [
                    {
                        Key: "parcelMap",
                        ThumbnailSource: "images/Parcel map.png",
@@ -102,7 +102,7 @@ dojo.declare("js.config", null, {
                        Name: "Imagery",
                        MapURL: "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
                    }
-		       ],
+               ],
 
 
     // Initial map extent. Use comma (,) to separate values and don't delete the last comma
@@ -132,7 +132,7 @@ dojo.declare("js.config", null, {
     // ServiceUrl is the REST end point for the layer
 
     BroadBandService:
-		       [
+               [
                    {
                        Key: "wirelessServices",
                        Title: "Wireless Broadband Providers for this Area",
@@ -143,7 +143,7 @@ dojo.declare("js.config", null, {
                        Title: "Wireline Broadband Providers for this Area",
                        ServiceURL: "http://www.broadbandmap.gov/broadbandmap/broadband/jun2011/wireline?latitude=${latitude}&longitude=${longitude}&format=jsonp"
                    }
-		       ],
+               ],
     // ------------------------------------------------------------------------------------------------------------------------
 
     // Set string value to be shown for null or blank values
@@ -454,20 +454,20 @@ dojo.declare("js.config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
     //Specify the download speed for broadband
     DownloadSpeed:
-		 {
-		     0: "N/A",
-		     1: "0-200kbps",
-		     2: "200kbps-768kbps",
-		     3: "768kbps-1.5mbps",
-		     4: "1.5-3mbps",
-		     5: "3-6mbps",
-		     6: "6-10mbps",
-		     7: "10-25mbps",
-		     8: "25-50mbps",
-		     9: "50-100mbps",
-		     10: "100mbps-1gbps",
-		     11: ">1gbps"
-		 },
+         {
+             0: "N/A",
+             1: "0-200kbps",
+             2: "200kbps-768kbps",
+             3: "768kbps-1.5mbps",
+             4: "1.5-3mbps",
+             5: "3-6mbps",
+             6: "6-10mbps",
+             7: "10-25mbps",
+             8: "25-50mbps",
+             9: "50-100mbps",
+             10: "100mbps-1gbps",
+             11: ">1gbps"
+         },
     // ------------------------------------------------------------------------------------------------------------------------
     //Set the price for property report
     PropertyReportPrice: 0,
@@ -495,7 +495,7 @@ dojo.declare("js.config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
     //Set data to be displayed for layouts for reports
     ReportLayouts:
-		  [
+          [
               {
                   DisplayText: "Landscape",
                   Value: "Landscape8x11"

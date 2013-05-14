@@ -1,19 +1,19 @@
 ﻿/** @license
-| Version 10.1.1
-| Copyright 2012 Esri
-|
-| Licensed under the Apache License, Version 2.0 (the "License");
-| you may not use this file except in compliance with the License.
-| You may obtain a copy of the License at
-|
-|    http://www.apache.org/licenses/LICENSE-2.0
-|
-| Unless required by applicable law or agreed to in writing, software
-| distributed under the License is distributed on an "AS IS" BASIS,
-| WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-| See the License for the specific language governing permissions and
-| limitations under the License.
-*/
+ | Version 10.2
+ | Copyright 2012 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
 //Get candidate results for searched address
 function LocateAddress() {
     if (dojo.byId("txtAddress").value.trim() == '') {
@@ -336,7 +336,7 @@ function LocateParcelonMap(parcelId, mapPoint, objectId) {
 }
 
 //Query parcel for parcel information
-function QueryParcel(layer, parcelId, mapPoint, objectId) {   
+function QueryParcel(layer, parcelId, mapPoint, objectId) {
     if (layer.ParcelQuery) {
         var queryTask = new esri.tasks.QueryTask(layer.ServiceURL);
         var query = new esri.tasks.Query();
@@ -385,7 +385,7 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
                         mapPoint = polygon.getPoint(0, 0);
                     }
                 }
-             
+
                 if (!isMobileDevice) {
                     if (featureSet.features.length == 1) {
                         dojo.byId("tdList").style.display = "none";
@@ -442,7 +442,7 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
                     }
                 }
             });
-        }, function (err) {       
+        }, function (err) {
             HideProgressIndicator();
             RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
             RemoveChildren(dojo.byId("tblAddressResults"));

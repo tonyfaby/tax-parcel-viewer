@@ -1,4 +1,20 @@
-﻿dojo.require("esri.map");
+﻿/** @license
+ | Version 10.2
+ | Copyright 2013 Esri
+ |
+ | Licensed under the Apache License, Version 2.0 (the "License");
+ | you may not use this file except in compliance with the License.
+ | You may obtain a copy of the License at
+ |
+ |    http://www.apache.org/licenses/LICENSE-2.0
+ |
+ | Unless required by applicable law or agreed to in writing, software
+ | distributed under the License is distributed on an "AS IS" BASIS,
+ | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ | See the License for the specific language governing permissions and
+ | limitations under the License.
+ */
+dojo.require("esri.map");
 dojo.require("mobile.InfoWindow");
 dojo.require("esri.tasks.geometry");
 dojo.require("esri.tasks.query");
@@ -25,7 +41,7 @@ var tempLayerId = "tempLayerID"; //variable to store temporary graphics layer id
 var tempParcelLayerId = "tempParcelLayerID"; //variable to store temporary graphics parcel layer id
 var isMobileDevice = false; //This variable will be set to 'true' when application is accessed from mobile phone device
 var layersCounter = 0; //variable to store counter for layers
-var mapPoint; //variable to store map point 
+var mapPoint; //variable to store map point
 var isiOS = false; //This variable will be set to 'true' if the application is accessed from iPhone or iPad
 var isBrowser = false; //This variable will be set to 'true' when application is accessed from desktop browsers
 var isTablet = false; //This variable will be set to 'true' when application is accessed from tablet device
@@ -50,7 +66,7 @@ var layers; //variable used to store the sales/foreclosure layer information
 var currency; //variable used to store type of currency
 var paypalcurrency; //variable used to store currency code for paypal
 var baseMapLayers; //Variable for storing base map layers
-var mapSharingOptions; //variable for storing the tiny service URL 
+var mapSharingOptions; //variable for storing the tiny service URL
 var infoWindowContent; //variable used to store the info window content
 var draw = false; //flag set to draw polygons
 var selectedParcel; //variable to store selected parcel
@@ -394,7 +410,7 @@ function MapInitFunction() {
                 id: layers[i].Key,
                 displayOnPan: false,
                 visible: layers[i].isVisible
-            });        
+            });
 
             if (layers[i].UseColor) {
                 var customLFillSymbol = new esri.symbol.SimpleFillSymbol();
@@ -405,7 +421,7 @@ function MapInitFunction() {
                 featureLayer.setRenderer(customRenderer);
                 FixTabWidth();
             }
-            map.addLayer(featureLayer);            
+            map.addLayer(featureLayer);
         }
     }
 
@@ -425,7 +441,7 @@ function MapInitFunction() {
         }
     });
 
-    dojo.connect(map, "onClick", function (evt) { 
+    dojo.connect(map, "onClick", function (evt) {
         if (draw) {
             map.infoWindow.hide();
             selectedGraphic = null;
@@ -435,7 +451,7 @@ function MapInitFunction() {
 
         var checked = dojo.query('img[state = "check"]', dojo.byId('divLayers'));
         if (!draw) {
-            if (checked.length == 0) {               
+            if (checked.length == 0) {
                 LocateParcel(null, evt.mapPoint, null)
                 return;
             }
