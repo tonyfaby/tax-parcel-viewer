@@ -1,4 +1,5 @@
-﻿/** @license
+﻿/*global dojo */
+/** @license
  | Version 10.2
  | Copyright 2012 Esri
  |
@@ -81,29 +82,23 @@ dojo.declare("js.config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
     // Set baseMap layers
     // Please note: All basemaps need to use the same spatial reference. By default, on application start the first basemap will be loaded
-    BaseMapLayers:
-               [
-                   {
-                       Key: "parcelMap",
-                       ThumbnailSource: "images/Parcel map.png",
-                       Name: "Parcel Map",
-                       MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/ParcelPublicAccessMI/MapServer",
-                       useForMobileDevice: true
-                   },
-                   {
-                       Key: "taxMap",
-                       ThumbnailSource: "images/Tax map.png",
-                       Name: "Tax Map",
-                       MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/TaxParcelMI/MapServer"
-                   },
-                   {
-                       Key: "imageryMap",
-                       ThumbnailSource: "images/imageryHybrid.png",
-                       Name: "Imagery",
-                       MapURL: "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
-                   }
-               ],
-
+    BaseMapLayers: [{
+        Key: "parcelMap",
+        ThumbnailSource: "images/Parcel map.png",
+        Name: "Parcel Map",
+        MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/ParcelPublicAccessMI/MapServer",
+        useForMobileDevice: true
+    }, {
+        Key: "taxMap",
+        ThumbnailSource: "images/Tax map.png",
+        Name: "Tax Map",
+        MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/TaxParcelMI/MapServer"
+    }, {
+        Key: "imageryMap",
+        ThumbnailSource: "images/imageryHybrid.png",
+        Name: "Imagery",
+        MapURL: "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"
+    }],
 
     // Initial map extent. Use comma (,) to separate values and don't delete the last comma
     DefaultExtent: "-9273520,5249870,-9270620,5251510",
@@ -120,30 +115,25 @@ dojo.declare("js.config", null, {
     // Key is used as an layerId while adding this layer to the map and has to be unique
     // ServiceUrl is the REST end point for the PrecinctLayer
 
-    FeedbackLayer:
-          {
-              Key: "feedbackLayer",
-              ServiceUrl: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/ParcelMarkupsTryitLive/FeatureServer/0"
+    FeedbackLayer: {
+        Key: "feedbackLayer",
+        ServiceUrl: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/ParcelMarkupsTryitLive/FeatureServer/0"
 
-          },
+    },
 
     // Key is used as an layerId while adding this layer to the map and has to be unique
     // Title is used for the text to be displayed
     // ServiceUrl is the REST end point for the layer
 
-    BroadBandService:
-               [
-                   {
-                       Key: "wirelessServices",
-                       Title: "Wireless Broadband Providers for this Area",
-                       ServiceURL: "http://www.broadbandmap.gov/broadbandmap/broadband/jun2011/wireless?latitude=${latitude}&longitude=${longitude}&format=jsonp"
-                   },
-                   {
-                       Key: "wirelineServices",
-                       Title: "Wireline Broadband Providers for this Area",
-                       ServiceURL: "http://www.broadbandmap.gov/broadbandmap/broadband/jun2011/wireline?latitude=${latitude}&longitude=${longitude}&format=jsonp"
-                   }
-               ],
+    BroadBandService: [{
+        Key: "wirelessServices",
+        Title: "Wireless Broadband Providers for this Area",
+        ServiceURL: "http://www.broadbandmap.gov/broadbandmap/broadband/jun2011/wireless?latitude=${latitude}&longitude=${longitude}&format=jsonp"
+    }, {
+        Key: "wirelineServices",
+        Title: "Wireline Broadband Providers for this Area",
+        ServiceURL: "http://www.broadbandmap.gov/broadbandmap/broadband/jun2011/wireline?latitude=${latitude}&longitude=${longitude}&format=jsonp"
+    }],
     // ------------------------------------------------------------------------------------------------------------------------
 
     // Set string value to be shown for null or blank values
@@ -203,271 +193,218 @@ dojo.declare("js.config", null, {
     // isVisible is the boolean parameter to check if the layer is a currently visible or not
     // isDynamicMapService is the boolean parameter to check if the layer is a dynamic map service or not
 
-    Layers:
-             [
-                {
-                    Key: "foreClosure",
-                    Title: "Foreclosures",
-                    ServiceURL: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/AssessmentOperationsHOST/FeatureServer/0",
-                    isVisible: false,
-                    isDynamicMapService: false,
-                    Fields:
-                [
-                    {
-                        DisplayText: "Parcel ID:",
-                        FieldName: "${PARCELID}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Address:",
-                        FieldName: "${SITEADDRESS}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Tax District Code:",
-                        FieldName: "${CVTTXCD}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Date Recorded:",
-                        FieldName: "${RECORDDT}",
-                        DataType: "string",
-                        isDate: true
-                    },
-                    {
-                        DisplayText: "Transaction Date:",
-                        FieldName: "${TRANSDT}",
-                        DataType: "string",
-                        isDate: true
-                    },
-                    {
-                        DisplayText: "Liber:",
-                        FieldName: "${LIBER}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Page:",
-                        FieldName: "${PAGE}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Sale Amount:",
-                        FieldName: "${SALEAMNT}",
-                        DataType: "double"
-                    }
-
-              ]
-      },
-      {
-          Key: "parcelSale",
-          Title: "Sales",
-          ServiceURL: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/AssessmentOperationsHOST/FeatureServer/1",
-          isVisible: false,
-          isDynamicMapService: false,
-          Fields:
-                [
-                    {
-                        DisplayText: "Parcel ID:",
-                        FieldName: "${PARCELID}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Site Address:",
-                        FieldName: "${SITEADDRESS}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Structure Type:",
-                        FieldName: "${RESSTRTYPE}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Transaction Date:",
-                        FieldName: "${TRANSDT}",
-                        DataType: "string",
-                        isDate: true
-                    },
-                    {
-                        DisplayText: "Grantor:",
-                        FieldName: "${GRANTOR}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Grantee:",
-                        FieldName: "${GRANTEE}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Liber:",
-                        FieldName: "${LIBER}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Page:",
-                        FieldName: "${PAGE}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Sale Amount:",
-                        FieldName: "${SALEAMNT}",
-                        DataType: "double"
-                    },
-                    {
-                        DisplayText: "Residential Structure Type:",
-                        FieldName: "${RESSTRTYPE}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Assessed Value:",
-                        FieldName: "${CNTASSDVAL}",
-                        DataType: "double"
-                    },
-                    {
-                        DisplayText: "Sales Ratio:",
-                        FieldName: "${SALESRATIO}",
-                        DataType: "string"
-                    }
-
-              ]
-      },
-      {
-          Key: "taxParcelLayer",
-          ServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/TaxParcelQuery/MapServer/0",
-          OutFields: "PARCELID, SITEADDRESS, CNVYNAME",
-          ParcelQuery: "UPPER(PARCELID) LIKE '%${0}%' OR UPPER(SITEADDRESS) LIKE '%${0}%' OR UPPER(CNVYNAME) LIKE '%${0}%'",
-          LocateParcelQuery: "PARCELID = '${0}'",
-          DisplayFields: ["PARCELID", "SITEADDRESS"],
-          UseColor: true,
-          Color: "#00ff00",
-          Alpha: 0.25,
-          Fields:
-                [
-                    {
-                        DisplayText: "Tax Parcel ID:",
-                        FieldName: "${PARCELID}",
-                        DataType: "string",
-                        isLink: true,
-                        href: "Photo.htm?ParcelId=${PARCELID}&SiteAddress=${SITEADDRESS}"
-                    },
-                    {
-                        DisplayText: "Sub or Condo:",
-                        FieldName: "${CNVYNAME}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Building : Unit:",
-                        FieldName: "${UNIT}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Tax District:",
-                        FieldName: "${CVTTXDSCRP}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "School District:",
-                        FieldName: "${SCHLDSCRP}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Use Description:",
-                        FieldName: "${USEDSCRP}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Owner Name:",
-                        FieldName: "${OWNERNME1}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Structure Type:",
-                        FieldName: "${RESSTRTYP}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Floor Area:",
-                        FieldName: "${RESFLRAREA}",
-                        DataType: "string"
-                    },
-                    {
-                        DisplayText: "Assessed Value:",
-                        FieldName: "${CNTASSDVAL}",
-                        DataType: "double"
-                    },
-                    {
-                        DisplayText: "Taxable Value:",
-                        FieldName: "${CNTTXBLVAL}",
-                        DataType: "double"
-                    },
-                    {
-                        DisplayText: "Current Taxes:",
-                        FieldName: "${TOTCNTTXOD}",
-                        DataType: "double"
-                    }
-              ]
-      }
-          ],
+    Layers: [{
+        Key: "foreClosure",
+        Title: "Foreclosures",
+        ServiceURL: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/AssessmentOperationsHOST/FeatureServer/0",
+        isVisible: false,
+        isDynamicMapService: false,
+        Fields: [{
+            DisplayText: "Parcel ID:",
+            FieldName: "${PARCELID}",
+            DataType: "string"
+        }, {
+            DisplayText: "Address:",
+            FieldName: "${SITEADDRESS}",
+            DataType: "string"
+        }, {
+            DisplayText: "Tax District Code:",
+            FieldName: "${CVTTXCD}",
+            DataType: "string"
+        }, {
+            DisplayText: "Date Recorded:",
+            FieldName: "${RECORDDT}",
+            DataType: "string",
+            isDate: true
+        }, {
+            DisplayText: "Transaction Date:",
+            FieldName: "${TRANSDT}",
+            DataType: "string",
+            isDate: true
+        }, {
+            DisplayText: "Liber:",
+            FieldName: "${LIBER}",
+            DataType: "string"
+        }, {
+            DisplayText: "Page:",
+            FieldName: "${PAGE}",
+            DataType: "string"
+        }, {
+            DisplayText: "Sale Amount:",
+            FieldName: "${SALEAMNT}",
+            DataType: "double"
+        }]
+    }, {
+        Key: "parcelSale",
+        Title: "Sales",
+        ServiceURL: "http://services.arcgis.com/b6gLrKHqgkQb393u/arcgis/rest/services/AssessmentOperationsHOST/FeatureServer/1",
+        isVisible: false,
+        isDynamicMapService: false,
+        Fields: [{
+            DisplayText: "Parcel ID:",
+            FieldName: "${PARCELID}",
+            DataType: "string"
+        }, {
+            DisplayText: "Site Address:",
+            FieldName: "${SITEADDRESS}",
+            DataType: "string"
+        }, {
+            DisplayText: "Structure Type:",
+            FieldName: "${RESSTRTYPE}",
+            DataType: "string"
+        }, {
+            DisplayText: "Transaction Date:",
+            FieldName: "${TRANSDT}",
+            DataType: "string",
+            isDate: true
+        }, {
+            DisplayText: "Grantor:",
+            FieldName: "${GRANTOR}",
+            DataType: "string"
+        }, {
+            DisplayText: "Grantee:",
+            FieldName: "${GRANTEE}",
+            DataType: "string"
+        }, {
+            DisplayText: "Liber:",
+            FieldName: "${LIBER}",
+            DataType: "string"
+        }, {
+            DisplayText: "Page:",
+            FieldName: "${PAGE}",
+            DataType: "string"
+        }, {
+            DisplayText: "Sale Amount:",
+            FieldName: "${SALEAMNT}",
+            DataType: "double"
+        }, {
+            DisplayText: "Residential Structure Type:",
+            FieldName: "${RESSTRTYPE}",
+            DataType: "string"
+        }, {
+            DisplayText: "Assessed Value:",
+            FieldName: "${CNTASSDVAL}",
+            DataType: "double"
+        }, {
+            DisplayText: "Sales Ratio:",
+            FieldName: "${SALESRATIO}",
+            DataType: "string"
+        }]
+    }, {
+        Key: "taxParcelLayer",
+        ServiceURL: "http://203.199.47.146/arcgis/rest/services/TaxParcelViewer/TaxParcelQuery/MapServer/0",
+        OutFields: "PARCELID, SITEADDRESS, CNVYNAME",
+        ParcelQuery: "UPPER(PARCELID) LIKE '%${0}%' OR UPPER(SITEADDRESS) LIKE '%${0}%' OR UPPER(CNVYNAME) LIKE '%${0}%'",
+        LocateParcelQuery: "PARCELID = '${0}'",
+        DisplayFields: ["PARCELID", "SITEADDRESS"],
+        UseColor: true,
+        Color: "#00ff00",
+        Alpha: 0.25,
+        Fields: [{
+            DisplayText: "Tax Parcel ID:",
+            FieldName: "${PARCELID}",
+            DataType: "string",
+            isLink: true,
+            href: "Photo.htm?ParcelId=${PARCELID}&SiteAddress=${SITEADDRESS}"
+        }, {
+            DisplayText: "Sub or Condo:",
+            FieldName: "${CNVYNAME}",
+            DataType: "string"
+        }, {
+            DisplayText: "Building : Unit:",
+            FieldName: "${UNIT}",
+            DataType: "string"
+        }, {
+            DisplayText: "Tax District:",
+            FieldName: "${CVTTXDSCRP}",
+            DataType: "string"
+        }, {
+            DisplayText: "School District:",
+            FieldName: "${SCHLDSCRP}",
+            DataType: "string"
+        }, {
+            DisplayText: "Use Description:",
+            FieldName: "${USEDSCRP}",
+            DataType: "string"
+        }, {
+            DisplayText: "Owner Name:",
+            FieldName: "${OWNERNME1}",
+            DataType: "string"
+        }, {
+            DisplayText: "Structure Type:",
+            FieldName: "${RESSTRTYP}",
+            DataType: "string"
+        }, {
+            DisplayText: "Floor Area:",
+            FieldName: "${RESFLRAREA}",
+            DataType: "string"
+        }, {
+            DisplayText: "Assessed Value:",
+            FieldName: "${CNTASSDVAL}",
+            DataType: "double"
+        }, {
+            DisplayText: "Taxable Value:",
+            FieldName: "${CNTTXBLVAL}",
+            DataType: "double"
+        }, {
+            DisplayText: "Current Taxes:",
+            FieldName: "${TOTCNTTXOD}",
+            DataType: "double"
+        }]
+    }],
 
     // ------------------------------------------------------------------------------------------------------------------------
     //Set the attributes for feedback layer
-    FeedbackAttributes:
-          {
-              PROBTYPE:
-                    {
-                        DataType: "string",
-                        DefaultValue: false,
-                        ControlId: "SelectedRequest",
-                        DomainNames: true
-                    },
-              COMMENT:
-                    {
-                        DataType: "string",
-                        DefaultValue: false,
-                        ControlId: "txtComment"
-                    },
-              SUBMITDT:
-                    {
-                        DataType: "string",
-                        DefaultValue: true,
-                        ControlId: ""
-                    },
-              NAME:
-                    {
-                        DataType: "string",
-                        DefaultValue: false,
-                        ControlId: "txtName"
-                    },
-              PHONE:
-                    {
-                        DataType: "string",
-                        DefaultValue: false,
-                        ControlId: "txtPhone"
-                    },
-              EMAIL:
-                    {
-                        DataType: "string",
-                        DefaultValue: false,
-                        ControlId: "txtMail"
-                    }
-          },
+    FeedbackAttributes: {
+        PROBTYPE: {
+            DataType: "string",
+            DefaultValue: false,
+            ControlId: "SelectedRequest",
+            DomainNames: true
+        },
+        COMMENT: {
+            DataType: "string",
+            DefaultValue: false,
+            ControlId: "txtComment"
+        },
+        SUBMITDT: {
+            DataType: "string",
+            DefaultValue: true,
+            ControlId: ""
+        },
+        NAME: {
+            DataType: "string",
+            DefaultValue: false,
+            ControlId: "txtName"
+        },
+        PHONE: {
+            DataType: "string",
+            DefaultValue: false,
+            ControlId: "txtPhone"
+        },
+        EMAIL: {
+            DataType: "string",
+            DefaultValue: false,
+            ControlId: "txtMail"
+        }
+    },
 
     // ------------------------------------------------------------------------------------------------------------------------
     //Specify the download speed for broadband
-    DownloadSpeed:
-         {
-             0: "N/A",
-             1: "0-200kbps",
-             2: "200kbps-768kbps",
-             3: "768kbps-1.5mbps",
-             4: "1.5-3mbps",
-             5: "3-6mbps",
-             6: "6-10mbps",
-             7: "10-25mbps",
-             8: "25-50mbps",
-             9: "50-100mbps",
-             10: "100mbps-1gbps",
-             11: ">1gbps"
-         },
+    DownloadSpeed: {
+        0: "N/A",
+        1: "0-200kbps",
+        2: "200kbps-768kbps",
+        3: "768kbps-1.5mbps",
+        4: "1.5-3mbps",
+        5: "3-6mbps",
+        6: "6-10mbps",
+        7: "10-25mbps",
+        8: "25-50mbps",
+        9: "50-100mbps",
+        10: "100mbps-1gbps",
+        11: ">1gbps"
+    },
     // ------------------------------------------------------------------------------------------------------------------------
     //Set the price for property report
     PropertyReportPrice: 0,
@@ -494,28 +431,23 @@ dojo.declare("js.config", null, {
     //SETTING FOR REPORT LAYOUTS
     // ------------------------------------------------------------------------------------------------------------------------
     //Set data to be displayed for layouts for reports
-    ReportLayouts:
-          [
-              {
-                  DisplayText: "Landscape",
-                  Value: "Landscape8x11"
-              },
-              {
-                  DisplayText: "Portrait",
-                  Value: "Portrait8x11"
-              }
-          ],
+    ReportLayouts: [{
+        DisplayText: "Landscape",
+        Value: "Landscape8x11"
+    }, {
+        DisplayText: "Portrait",
+        Value: "Portrait8x11"
+    }],
 
     // ------------------------------------------------------------------------------------------------------------------------
     // SETTINGS FOR MAP SHARING
     // ------------------------------------------------------------------------------------------------------------------------
     // Set URL for TinyURL service, and URLs for social media
-    MapSharingOptions:
-          {
-              TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
-              TinyURLResponseAttribute: "data.url",
-              FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Tax%20Viewer%20Map",
-              TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Tax%20Viewer%20Map ${0}",
-              ShareByMailLink: "mailto:%20?subject=Tax%20Viewer%20Map&body=${0}"
-          }
+    MapSharingOptions: {
+        TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
+        TinyURLResponseAttribute: "data.url",
+        FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Tax%20Viewer%20Map",
+        TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Tax%20Viewer%20Map ${0}",
+        ShareByMailLink: "mailto:%20?subject=Tax%20Viewer%20Map&body=${0}"
+    }
 });
