@@ -683,7 +683,7 @@ function PopulateParcelInformation(mapPoint, feature, featureLength, geometry) {
             PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], mapPoint, null);
         }
     }
-    dijit.byId("divProperty").select();
+    dijit.byId("divProperty").selected = true;
     ShowPropertyOnStart();
     selectedGraphic = geometry.getExtent().getCenter();
     geometryService.project([selectedGraphic], new esri.SpatialReference({ wkid: 4326 }), function (newPoint) {
