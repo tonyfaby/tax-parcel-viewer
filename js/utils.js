@@ -102,7 +102,15 @@ function GetMobileMapExtent(mapPoint) {
 
 //Get the extent based on the mappoint
 function GetBrowserMapExtent(mapPoint) {
-    var extent = map.extent;
+    // Added code to Zoom to selected Parcel
+    // David Wray
+    var extent;
+    if (map.getLayer(tempParcelLayerId).graphics.length > 0) {
+        extent = map.getLayer(tempParcelLayerId).graphics[0].geometry.getExtent().expand(6);
+    }
+    else {
+        extent = map.extent;
+    }
     var width = extent.getWidth();
     var height = extent.getHeight();
     var xmin = mapPoint.x - ((2 * width) / 2.8);
