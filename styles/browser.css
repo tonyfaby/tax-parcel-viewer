@@ -26,7 +26,7 @@
 /* 4.  Set the styles for info window           - { Style(s) to look for: divItemsContainer,divItemsContent,divParcelDataScrollContainer,divFeatureDataScrollbarContainer,
                                                                           divBroadbandContainer, #divNeighborhoodContainer,divParcelScrollContent, #divNeighborhoodContent,
                                                                           #divBroadbandContent,divFeatureDataScrollbarContent,scrollbar_footer}*/
-/* 5.  Set the styles for tab container          - { Style(s) to look for: mblTabButton}*/
+/* 5.  Set the styles for tab container          - { Style(s) to look for: mblTabBarButton}*/
 /* 6.  Set the styles for basemap                - { Style(s) to look for: basemapThumbnail}*/
 /* 7.  Set the styles for esri slider            - { Style(s) to look for: esriSimpleSlider}*/
 
@@ -208,7 +208,7 @@ html, body
 
 /*Styles for the tab container*/
 
-.mblTabButton
+.mblTabBarSegmentedControl .mblTabBarButton
 {
     /*width: 95px;*/
     width: 105px; /*  min-width: 95px;*/
