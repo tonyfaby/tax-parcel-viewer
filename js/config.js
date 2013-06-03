@@ -108,7 +108,7 @@ dojo.declare("js.config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
 
     // specify WebMapID within quotes
-    WebMapId: "4778fee6371d4e83a22786029f30c7e1",
+    WebMapId: "f5c23594330d431aa5d9a27abb90296d",
 
     // Configure operational layers
 
