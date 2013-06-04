@@ -255,65 +255,7 @@ function init() {
         for (var i = 0; i < layers.length; i++) {
             if (!layers[i].ParcelQuery) {
                 if (!layers[i].isDynamicMapService) {
-                    map.getLayer(layers[i].Key).selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW, function (feature) {
-                        var table = document.createElement("table");
-                        var tbody = document.createElement("tbody");
-                        table.appendChild(tbody);
-                        var tr = document.createElement("tr");
-                        tbody.appendChild(tr);
-
-                        var td = document.createElement("td");
-                        var lastindex = feature[0]._graphicsLayer.url.lastIndexOf('/');
-                        var checkbox = CreateCheckBox(feature[0]._graphicsLayer.id, feature[0]._graphicsLayer.url.substr(lastindex + 1), feature[0]._graphicsLayer.visible);
-
-                        checkbox.onclick = function () {
-                            if (this.getAttribute("state") == "check") {
-                                this.src = "images/unchecked.png";
-                                this.setAttribute("state", "uncheck");
-                                map.getLayer(feature[0]._graphicsLayer.id).hide();
-                                map.infoWindow.hide();
-                            }
-                            else {
-                                this.src = "images/checked.png";
-                                this.setAttribute("state", "check");
-                                ShowProgressIndicator();
-                                map.getLayer(feature[0]._graphicsLayer.id).show();
-                                map.infoWindow.hide();
-                                selectedGraphic = null;
-                                map.getLayer(tempLayerId).clear();
-                                map.getLayer(tempParcelLayerId).clear();
-                            }
-                            HideProgressIndicator();
-                        };
-
-                        td.appendChild(checkbox);
-                        tr.appendChild(td);
-
-                        td = document.createElement("td");
-                        var img = document.createElement("img");
-                        img.src = feature[0]._graphicsLayer.url + '/images/' + map.getLayer(feature[0]._graphicsLayer.id).renderer.getSymbol().imageData;
-                        if (isMobileDevice) {
-                            img.style.width = "44px";
-                            img.style.height = "44px";
-                        }
-                        else {
-                            img.style.width = "20px";
-                            img.style.height = "20px";
-                        }
-                        td.appendChild(img);
-
-                        tr.appendChild(td);
-
-                        td = document.createElement("td");
-                        for (var t = 0; t < layers.length; t++) {
-                            if (layers[t].Key == feature[0]._graphicsLayer.id) {
-                                td.appendChild(document.createTextNode(layers[t].Title));
-                                break;
-                            }
-                        }
-                        tr.appendChild(td);
-                        dojo.byId('divLayers').appendChild(table);
-                    });
+                    CreateFeatureLayerCheckbox(layers[i], query);
                 }
             }
         }
@@ -330,6 +272,96 @@ function init() {
 
     pdfData.isEmpty = true;
 }
+
+function CreateFeatureLayerCheckbox(featureLayer, query) {
+    // A MODE_SELECTION FeatureLayer gets stuck in suspended mode at 3.1 if it is created invisible,
+    // so we created it visible and then correct the visibility right after we fetch its features
+    var featureId = featureLayer.Key;
+    var initiallyVisible = featureLayer.isVisible;
+    map.getLayer(featureLayer.Key).selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW, function (features) {
+        if(!features || features.length === 0) {
+            console.warn(featureId + ": no features found");
+            return;
+        } else {
+            console.log(featureId + ": " + features.length + " features found");
+        }
+        var representativeFeature = features[0];
+        var graphicsLayer = representativeFeature.getLayer();
+        if(!graphicsLayer) {
+            return;
+        }
+        // Match the configured visibility now that we've the features
+        if(initiallyVisible) {
+            graphicsLayer.show();
+        } else {
+            graphicsLayer.hide();
+        }
+
+        var graphicsLayerId = graphicsLayer.id;
+        var table = document.createElement("table");
+        var tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+        var tr = document.createElement("tr");
+        tbody.appendChild(tr);
+
+        var td = document.createElement("td");
+        var lastindex = graphicsLayer.url.lastIndexOf('/');
+        var checkbox = CreateCheckBox(
+            graphicsLayerId,
+            graphicsLayer.url.substr(lastindex + 1),
+            initiallyVisible);
+
+        checkbox.onclick = function () {
+            if (this.getAttribute("state") == "check") {
+                this.src = "images/unchecked.png";
+                this.setAttribute("state", "uncheck");
+                graphicsLayer.hide();
+                map.infoWindow.hide();
+            }
+            else {
+                this.src = "images/checked.png";
+                this.setAttribute("state", "check");
+                ShowProgressIndicator();
+                graphicsLayer.show();
+                map.infoWindow.hide();
+                selectedGraphic = null;
+                map.getLayer(tempLayerId).clear();
+                map.getLayer(tempParcelLayerId).clear();
+            }
+            HideProgressIndicator();
+        };
+
+        td.appendChild(checkbox);
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        var img = document.createElement("img");
+        img.src = graphicsLayer.url + '/images/'
+            + graphicsLayer.renderer.getSymbol().imageData;
+        if (isMobileDevice) {
+            img.style.width = "44px";
+            img.style.height = "44px";
+        }
+        else {
+            img.style.width = "20px";
+            img.style.height = "20px";
+        }
+        td.appendChild(img);
+
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        for (var t = 0; t < layers.length; t++) {
+            if (layers[t].Key == graphicsLayerId) {
+                td.appendChild(document.createTextNode(layers[t].Title));
+                break;
+            }
+        }
+        tr.appendChild(td);
+        dojo.byId('divLayers').appendChild(table);
+    });
+}
+
 
 //Function to create graphics and layers
 function MapInitFunction() {
@@ -404,12 +436,14 @@ function MapInitFunction() {
             map.addLayer(CreateDynamicServiceLayer(layers[i].ServiceURL, layers[i].ServiceURL.substr(lastindex + 1), layers[i].Key, layers[i].isVisible, layers[i].Title));
         }
         else {
+            // A MODE_SELECTION FeatureLayer gets stuck in suspended mode at 3.1 if it is created invisible,
+            // so we'll create it visible and then correct the visibility right after we fetch its features
             var featureLayer = new esri.layers.FeatureLayer(layers[i].ServiceURL, {
                 mode: esri.layers.FeatureLayer.MODE_SELECTION,
                 outFields: ["*"],
                 id: layers[i].Key,
                 displayOnPan: false,
-                visible: layers[i].isVisible
+                visible: true  // the default, but we'll repeat it here for emphasis that we're ignoring the config
             });
 
             if (layers[i].UseColor) {
