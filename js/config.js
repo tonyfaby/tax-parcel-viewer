@@ -277,18 +277,6 @@ dojo.declare("js.config", null, {
             DisplayText: "Sale Amount:",
             FieldName: "${SALEAMNT}",
             DataType: "double"
-        }, {
-            DisplayText: "Residential Structure Type:",
-            FieldName: "${RESSTRTYPE}",
-            DataType: "string"
-        }, {
-            DisplayText: "Assessed Value:",
-            FieldName: "${CNTASSDVAL}",
-            DataType: "double"
-        }, {
-            DisplayText: "Sales Ratio:",
-            FieldName: "${SALESRATIO}",
-            DataType: "string"
         }]
     }, {
         Key: "taxParcelLayer",
