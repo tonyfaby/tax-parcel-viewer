@@ -86,13 +86,13 @@ dojo.declare("js.config", null, {
         Key: "parcelMap",
         ThumbnailSource: "images/Parcel map.png",
         Name: "Streets",
-        MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/ParcelPublicAccessMI/MapServer",
+        MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/ParcelPublicAccessMI/MapServer",
         useForMobileDevice: true
     }, {
         Key: "taxMap",
         ThumbnailSource: "images/Tax map.png",
         Name: "Tax Map",
-        MapURL: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/TaxParcelMI/MapServer"
+        MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/TaxParcelMI/MapServer"
     }, {
         Key: "imageryMap",
         ThumbnailSource: "images/imageryHybrid.png",
@@ -153,16 +153,16 @@ dojo.declare("js.config", null, {
     // GEOMETRY SERVICE SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set geometry service URL
-    GeometryService: "http://arcgis-tenone2012-1974758903.us-west-1.elb.amazonaws.com/arcgis/rest/services/Utilities/Geometry/GeometryServer",
+    GeometryService: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer",
 
     // ------------------------------------------------------------------------------------------------------------------------
     // GEOPROCESSING SERVICE SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set report geoprocessing service URL
-    ReportGPServiceURL: "http://ec2-54-214-140-9.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/TaxParcelReporting/GPServer/TaxParcelReporting",
+    ReportGPServiceURL: "http://ec2-54-214-169-132.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/TaxParcelReporting/GPServer/TaxParcelReporting",
 
     //Set URL for the print task
-    PrintTaskURL: "http://ec2-54-214-140-9.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task/execute",
+    PrintTaskURL: "http://ec2-54-214-169-132.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task/execute",
 
     // ------------------------------------------------------------------------------------------------------------------------
     // INFO-WINDOW SETTINGS
@@ -196,7 +196,7 @@ dojo.declare("js.config", null, {
     Layers: [{
         Key: "foreClosure",
         Title: "Foreclosures",
-        ServiceURL: "http://ec2-54-214-140-9.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/AssessmentOperations/MapServer/0",
+        ServiceURL: "http://tryitlive.arcgis.com/arcgis/rest/services/AssessmentOperations/MapServer/0",
         isVisible: false,
         isDynamicMapService: false,
         Fields: [{
@@ -237,7 +237,7 @@ dojo.declare("js.config", null, {
     }, {
         Key: "parcelSale",
         Title: "Sales",
-        ServiceURL: "http://ec2-54-214-140-9.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/AssessmentOperations/MapServer/1",
+        ServiceURL: "http://tryitlive.arcgis.com/arcgis/rest/services/AssessmentOperations/MapServer/1",
         isVisible: false,
         isDynamicMapService: false,
         Fields: [{
@@ -280,7 +280,7 @@ dojo.declare("js.config", null, {
         }]
     }, {
         Key: "taxParcelLayer",
-        ServiceURL: "http://ec2-54-214-140-9.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/TaxParcelQuery/MapServer/0",
+        ServiceURL: "http://tryitlive.arcgis.com/arcgis/rest/services/TaxParcelQuery/MapServer/0",
         OutFields: "PARCELID, SITEADDRESS, CNVYNAME",
         ParcelQuery: "UPPER(PARCELID) LIKE '%${0}%' OR UPPER(SITEADDRESS) LIKE '%${0}%' OR UPPER(CNVYNAME) LIKE '%${0}%'",
         LocateParcelQuery: "PARCELID = '${0}'",
