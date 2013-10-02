@@ -1292,6 +1292,7 @@ function PopulateBroadBandInformation(broadBandService, location, parcelId, repo
     dojo.io.script.get({
         url: url,
         callbackParamName: "callback",
+        timeout: 5000,
         load: function (data) {
             var results = data.Results[broadBandService.Key];
             if (parcelId) {
@@ -1345,6 +1346,9 @@ function PopulateBroadBandInformation(broadBandService, location, parcelId, repo
                 trData.appendChild(tdSpeed);
             }
             SetHeightParcelData();
+        },
+        error: function(error){
+            HideProgressIndicator();
         }
     });
 }
