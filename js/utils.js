@@ -1359,19 +1359,6 @@ var noofRecords = 0;
 
 //get params to call GP service
 function ExecuteParcelGPService(parcelId, reportType) {
-    if (pdfData[parcelId][reportType]["NeighbourhoodInfo"] == "")
-        return;
-
-    var hasBroadbandInformation = 0;
-    var count = 0;
-    for (var i in broadBandService) {
-        count++;
-        (pdfData[parcelId][reportType]["BroadbandInfo"][broadBandService[i].Key]) ? hasBroadbandInformation++ : hasBroadbandInformation;
-    }
-    if (hasBroadbandInformation != count) {
-        return;
-    }
-
     if (reportType == "PropertyReport" && propertyReportPrice != 0) {
         alert(messages.getElementsByTagName("propertyReportAdded")[0].childNodes[0].nodeValue);
         dojo.byId('txtSelectedLayout').value = "";
