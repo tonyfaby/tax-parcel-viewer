@@ -87,14 +87,16 @@
         }
     </style>
     <script type="text/javascript">
-        djConfig = {
+     var dojoConfig = {
+            async: false,
             parseOnLoad: true,
             mblHideAddressBar: false,
-            baseUrl: "./",
-            modulePaths: { "js": "js" }
-        }
+            packages:[
+                {name:"js",location:location.pathname.replace(/\/[^/]+$/, '') + '/js'}
+            ]
+        };
     </script>
-    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.8compact">
+    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5compact">
     </script>
     <script type="text/javascript">
         dojo.require("js.config");
