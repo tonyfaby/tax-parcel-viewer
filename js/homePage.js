@@ -140,25 +140,25 @@ function init() {
         dojo.byId("divShareContainer").style.right = "20px";
     }
     var userAgent = window.navigator.userAgent;
-
     if (userAgent.indexOf("iPhone") >= 0 || userAgent.indexOf("iPad") >= 0) {
         isiOS = true;
     }
-    if (userAgent.indexOf("Android") >= 0 || userAgent.indexOf("iPhone") >= 0) {
+
+    if ((userAgent.indexOf("Android") >= 0 && userAgent.indexOf("Mobile") >= 0) || userAgent.indexOf("iPhone") >= 0) {
+        fontSize = 15;
         isMobileDevice = true;
-        dojo.byId('dynamicStyleSheet').href = "styles/mobile.css";
-        dojo.byId('divSplashContent').style.fontSize = "15px";
-    }
-    else if (userAgent.indexOf("iPad") >= 0) {
+        dojo.byId("dynamicStyleSheet").href = "styles/mobile.css";
+    } else if ((userAgent.indexOf("iPad") >= 0) || (userAgent.indexOf("Android") >= 0)) {
+        fontSize = 14;
         isTablet = true;
-        dojo.byId('dynamicStyleSheet').href = "styles/tablet.css";
-        dojo.byId('divSplashContent').style.fontSize = "14px";
-    }
-    else {
+        dojo.byId("dynamicStyleSheet").href = "styles/tablet.css";
+    } else {
+        fontSize = 11;
         isBrowser = true;
-        dojo.byId('dynamicStyleSheet').href = "styles/browser.css";
-        dojo.byId('divSplashContent').style.fontSize = "11px";
+        dojo.byId("dynamicStyleSheet").href = "styles/browser.css";
     }
+    dojo.byId("divSplashContent").style.fontSize = fontSize + "px";
+
     if (isMobileDevice) {
         dojo.byId('divSidePanel').style.display = 'none';
         dojo.byId('divAddressResultContainer').appendChild(dojo.byId('tblAddressSearch'));
@@ -200,7 +200,7 @@ function init() {
             td.style.borderBottom = "1px solid white";
             td.style.cursor = "pointer";
             td.innerHTML = responseObject.ReportLayouts[i].DisplayText;
-            td.setAttribute("value", responseObject.ReportLayouts[i].Value)
+            td.setAttribute("value", responseObject.ReportLayouts[i].Value);
             td.onclick = function () {
                 dojo.byId('txtSelectedLayout').value = this.innerHTML;
                 dojo.byId('txtSelectedLayout').setAttribute("layout", this.getAttribute("value"));
@@ -255,7 +255,8 @@ function init() {
         for (var i = 0; i < layers.length; i++) {
             if (!layers[i].ParcelQuery) {
                 if (!layers[i].isDynamicMapService) {
-                    CreateFeatureLayerCheckbox(layers[i], query);
+                    CreateFeatureLayerCheckbox(layers[i], query, i);
+                    break;
                 }
             }
         }
@@ -273,7 +274,7 @@ function init() {
     pdfData.isEmpty = true;
 }
 
-function CreateFeatureLayerCheckbox(featureLayer, query) {
+function CreateFeatureLayerCheckbox(featureLayer, query, count) {
     // A MODE_SELECTION FeatureLayer gets stuck in suspended mode at 3.1 if it is created invisible,
     // so we created it visible and then correct the visibility right after we fetch its features
     var featureId = featureLayer.Key;
@@ -317,6 +318,7 @@ function CreateFeatureLayerCheckbox(featureLayer, query) {
                 this.setAttribute("state", "uncheck");
                 graphicsLayer.hide();
                 map.infoWindow.hide();
+                selectedGraphic = null;
             }
             else {
                 this.src = "images/checked.png";
@@ -336,8 +338,7 @@ function CreateFeatureLayerCheckbox(featureLayer, query) {
 
         td = document.createElement("td");
         var img = document.createElement("img");
-        img.src = graphicsLayer.url + '/images/'
-            + graphicsLayer.renderer.getSymbol().imageData;
+        img.src = graphicsLayer.renderer.getSymbol().url;
         if (isMobileDevice) {
             img.style.width = "44px";
             img.style.height = "44px";
@@ -359,6 +360,14 @@ function CreateFeatureLayerCheckbox(featureLayer, query) {
         }
         tr.appendChild(td);
         dojo.byId('divLayers').appendChild(table);
+        for (var i = (count + 1); i < layers.length; i++) {
+            if (!layers[i].ParcelQuery) {
+                if (!layers[i].isDynamicMapService) {
+                    CreateFeatureLayerCheckbox(layers[i], query, i);
+                    break;
+                }
+            }
+        }
     });
 }
 
@@ -383,12 +392,14 @@ function MapInitFunction() {
     webmapDetails.addCallback(function (webmapInfo) {
         neighbourHoodLayerInfo = webmapInfo.layerInfo;
         for (var i in webmapInfo.layerInfo) {
-            var neighbourHoodLayer = new esri.layers.FeatureLayer(webmapInfo.url + "/" + webmapInfo.layerInfo[i].id, {
-                mode: esri.layers.FeatureLayer.MODE_SELECTION,
-                outFields: ["*"],
-                id: webmapInfo.layerInfo[i].id
-            });
-            map.addLayer(neighbourHoodLayer);
+            if (webmapInfo.layerInfo.hasOwnProperty(i)) {
+                var neighbourHoodLayer = new esri.layers.FeatureLayer(webmapInfo.url + "/" + webmapInfo.layerInfo[i].id, {
+                    mode: esri.layers.FeatureLayer.MODE_SELECTION,
+                    outFields: ["*"],
+                    id: webmapInfo.layerInfo[i].id
+                });
+                map.addLayer(neighbourHoodLayer);
+            }
         }
         setTimeout(function () {
             var parcelId = GetQuerystring('parcelId');
@@ -419,10 +430,12 @@ function MapInitFunction() {
 
     var handle = dojo.connect(fbLayer, "onUpdateEnd", function (features) {
         for (var key in feedbackAttributes) {
-            if (feedbackAttributes[key].DomainNames) {
-                for (var index in fbLayer.fields) {
-                    if (fbLayer.fields[index].name == key) {
-                        PopulateFeedbackTypes(fbLayer.fields[index].domain.codedValues, feedbackAttributes[key].ControlId);
+            if (feedbackAttributes.hasOwnProperty(key)) {
+                if (feedbackAttributes[key].DomainNames) {
+                    for (var index in fbLayer.fields) {
+                        if (fbLayer.fields[index].name == key) {
+                            PopulateFeedbackTypes(fbLayer.fields[index].domain.codedValues, feedbackAttributes[key].ControlId);
+                        }
                     }
                 }
             }

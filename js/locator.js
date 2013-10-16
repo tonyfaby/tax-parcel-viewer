@@ -270,8 +270,10 @@ function CreateTable(attributes, tBody, table, parcelAttributeID, displayFields,
 
     var td = document.createElement("td");
     for (var index in attributes) {
-        if (!attributes[index]) {
-            attributes[index] = showNullValueAs;
+        if (attributes.hasOwnProperty(index)) {
+            if (!attributes[index]) {
+                attributes[index] = showNullValueAs;
+            }
         }
     }
     var parcelID = attributes[displayFields[0]];
@@ -414,8 +416,10 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
                             map.infoWindow.show(screenPoint);
                             if (featureSet.features.length == 1) {
                                 for (var i in results.features[0].attributes) {
-                                    if (!results.features[0].attributes[i]) {
-                                        results.features[0].attributes[i] = showNullValueAs;
+                                    if (results.features[0].attributes.hasOwnProperty(i)) {
+                                        if (!results.features[0].attributes[i]) {
+                                            results.features[0].attributes[i] = showNullValueAs;
+                                        }
                                     }
                                 }
 
@@ -604,37 +608,39 @@ function ShowParcelInfoWindow(attributes, mapPoint, parcelId) {
             var parcelInfoWindowFields = layers[i].Fields;
 
             for (var index in parcelInfoWindowFields) {
-                var tr = document.createElement("tr");
-                tbody.appendChild(tr);
-                var td = document.createElement("td");
-                td.className = "tdParcelDisplayText"
-                td.innerHTML = parcelInfoWindowFields[index].DisplayText;
-                var td1 = document.createElement("td");
-                td1.className = "tdWordBreak";
-                if (parcelInfoWindowFields[index].isLink) {
-                    var parcelLink = document.createElement("a");
-                    parcelLink.style.color = '#ffffff';
-                    parcelLink.setAttribute("target", "_blank");
-                    parcelLink.setAttribute("href", dojo.string.substitute(parcelInfoWindowFields[index].href, attributes));
-                    parcelLink.appendChild(document.createTextNode(dojo.string.substitute(parcelInfoWindowFields[index].FieldName, attributes)));
-                    td1.appendChild(parcelLink);
-                }
-                else {
-                    var value = dojo.string.substitute(parcelInfoWindowFields[index].FieldName, attributes);
-                    if (value.endsWith(showNullValueAs)) {
-                        td1.innerHTML = showNullValueAs;
-                    }
-                    else if (parcelInfoWindowFields[index].DataType == "double") {
-                        var formattedValue = dojo.number.format(value, { pattern: "#,##0.##" });
-                        td1.innerHTML = currency + " " + formattedValue;
+                if (parcelInfoWindowFields.hasOwnProperty(index)) {
+                    var tr = document.createElement("tr");
+                    tbody.appendChild(tr);
+                    var td = document.createElement("td");
+                    td.className = "tdParcelDisplayText"
+                    td.innerHTML = parcelInfoWindowFields[index].DisplayText;
+                    var td1 = document.createElement("td");
+                    td1.className = "tdWordBreak";
+                    if (parcelInfoWindowFields[index].isLink) {
+                        var parcelLink = document.createElement("a");
+                        parcelLink.style.color = '#ffffff';
+                        parcelLink.setAttribute("target", "_blank");
+                        parcelLink.setAttribute("href", dojo.string.substitute(parcelInfoWindowFields[index].href, attributes));
+                        parcelLink.appendChild(document.createTextNode(dojo.string.substitute(parcelInfoWindowFields[index].FieldName, attributes)));
+                        td1.appendChild(parcelLink);
                     }
                     else {
-                        td1.innerHTML = value;
+                        var value = dojo.string.substitute(parcelInfoWindowFields[index].FieldName, attributes);
+                        if (value.endsWith(showNullValueAs)) {
+                            td1.innerHTML = showNullValueAs;
+                        }
+                        else if (parcelInfoWindowFields[index].DataType == "double") {
+                            var formattedValue = dojo.number.format(value, { pattern: "#,##0.##" });
+                            td1.innerHTML = currency + " " + formattedValue;
+                        }
+                        else {
+                            td1.innerHTML = value;
+                        }
                     }
-                }
 
-                tr.appendChild(td);
-                tr.appendChild(td1);
+                    tr.appendChild(td);
+                    tr.appendChild(td1);
+                }
             }
         }
     }
@@ -679,8 +685,10 @@ function PopulateParcelInformation(mapPoint, feature, featureLength, geometry) {
         dojo.byId("tdList").style.display = "block";
     }
     for (var i in neighbourHoodLayerInfo) {
-        if (map.getLayer(neighbourHoodLayerInfo[i].id).maxScale <= ((mapScale) ? mapScale : Number(dojo.byId("divShareContainer").getAttribute("mapScale"))) && map.getLayer(neighbourHoodLayerInfo[i].id).minScale >= ((mapScale) ? mapScale : Number(dojo.byId("divShareContainer").getAttribute("mapScale")))) {
-            PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], mapPoint, null);
+        if (neighbourHoodLayerInfo.hasOwnProperty(i)) {
+            if (map.getLayer(neighbourHoodLayerInfo[i].id).maxScale <= ((mapScale) ? mapScale : Number(dojo.byId("divShareContainer").getAttribute("mapScale"))) && map.getLayer(neighbourHoodLayerInfo[i].id).minScale >= ((mapScale) ? mapScale : Number(dojo.byId("divShareContainer").getAttribute("mapScale")))) {
+                PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], mapPoint, null);
+            }
         }
     }
     dijit.byId("divProperty").selected = true;
@@ -699,8 +707,10 @@ function PopulateParcelInformation(mapPoint, feature, featureLength, geometry) {
         dojo.byId("divParcelInformation").style.display = "block";
     }
     for (var index in feature.attributes) {
-        if (!feature.attributes[index]) {
-            feature.attributes[index] = showNullValueAs;
+        if (feature.attributes.hasOwnProperty(index)) {
+            if (!feature.attributes[index]) {
+                feature.attributes[index] = showNullValueAs;
+            }
         }
     }
     ShowParcelInfoWindow(feature.attributes, mapPoint, null);

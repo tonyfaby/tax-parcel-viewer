@@ -75,7 +75,7 @@ function FixTabWidth() {
             dojo.byId('divTabBar').style.display = "block";
             var tabWidth = Math.round(dojo.window.getBox().w / 3);
             dojo.byId('divTabBar').style.width = Math.round((dojo.window.getBox().w - 20)) + "px";
-            dojo.query('.mblTabButton', dojo.byId('divTabBar')).forEach(function (node, idx, arr) {
+            dojo.query('.mblTabBarButton', dojo.byId('divTabBar')).forEach(function (node, idx, arr) {
                 node.style.width = (tabWidth - 14) + "px";
             });
         }, 1000);
@@ -450,7 +450,7 @@ function CreateScrollbar(container, content) {
     scrollbar_track.appendChild(scrollbar_handle);
     container.appendChild(scrollbar_track);
 
-    if (content.scrollHeight <= content.offsetHeight) {
+    if (content.scrollHeight <= (content.offsetHeight + 5)) {
         scrollbar_handle.style.display = 'none';
         scrollbar_track.style.display = 'none';
         return;
@@ -1086,7 +1086,6 @@ function QueryLayer(node, mapPoint) {
     query.returnGeometry = true;
     query.outFields = ["*"];
     query.geometry = ExtentFromPoint(mapPoint);
-    query.maxAllowableOffset = MaxOffSet();
     query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_INTERSECTS;
     queryTask.execute(query, function (results) {
         responseCount++
@@ -1105,7 +1104,9 @@ function QueryLayer(node, mapPoint) {
                 }
             }
             if (layerInfo.Title != visibleLayer) {
-                return;
+                if (taxLayerCount > 1) {
+                    return;
+                }
             }
         }
 
@@ -1347,8 +1348,16 @@ function PopulateBroadBandInformation(broadBandService, location, parcelId, repo
             }
             SetHeightParcelData();
         },
-        error: function(error){
+        error: function () {
+            var broadBandServiceName;
+            if (broadBandService.Key == "wirelessServices") {
+                broadBandServiceName = "wireless services";
+            }
+            else {
+                broadBandServiceName = "wireline services";
+            }
             HideProgressIndicator();
+            alert(dojo.string.substitute(messages.getElementsByTagName("BroadBandService")[0].childNodes[0].nodeValue, [broadBandServiceName]));
         }
     });
 }
@@ -1388,6 +1397,12 @@ function CallParcelGPService(parcelId, reportType) {
     }
     var mapExtent = pdfData[parcelId][reportType]["mapExtent"];
     var reportData = pdfData[parcelId][reportType]["AttributeInfo"] + "~" + pdfData[parcelId][reportType]["NeighbourhoodInfo"] + "~" + broadbandInfo.join("#");
+    if (!(broadbandInfo[0])) {
+        HideProgressIndicator();
+        dojo.byId("txtValidationCode").value = "";
+        alert(messages.getElementsByTagName("unableToCreatePDF")[0].childNodes[0].nodeValue);
+        return;
+    }
 
     for (var i = 0; i < layers.length; i++) {
         if (layers[i].ParcelQuery) {
@@ -1522,15 +1537,9 @@ function CallParcelGPService(parcelId, reportType) {
         var graphic = pdfData[parcelId][reportType]["Graphic"];
         graphic.setAttributes({ "ID": 1 });
         featureSet.features.push(graphic);
-
-        var params = {
-            "Layout": "Landscape8x11",
-            "Map_Title": "Map Title",
-            "ReportData": reportData
-        };
         esri.config.defaults.io.alwaysUseProxy = true;
 
-        params = {
+        var params = {
             "Layout": "Landscape8x11",
             "ReportData": reportData
         };
@@ -1601,7 +1610,9 @@ function startDrawingFeedback(btnDrawFeedback) {
 
 //Handles end of drawing feedback
 function finishDrawingFeedback(geometry) {
-    draw = false;
+    setTimeout(function () {
+        draw = false;
+    }, 100);
     tb.deactivate();
     feedbackItem = new esri.Graphic(geometry, polygonFillSymbol, null, null);
     map.getLayer(tempLayerId).add(feedbackItem);
@@ -2046,9 +2057,17 @@ function ShowPayPal() {
         return;
     }
     var url = "paypal.aspx?Code=Purchase&Price=" + Number(dojo.byId("tdTPrice").innerHTML.split(" ")[1]) + "&Currency=" + paypalcurrency + "&AppName= " + dojo.byId('lblAppName').innerHTML + "&AppIcon=" + dojo.byId('imgApplication').src;
-    if (!popupWin || popupWin.closed) {
+    try {
+        if (!popupWin || popupWin.closed) {
+            popupWin = window.open(url, "popupWin", "width=1000,height=700");
+        }
+        else {
+            popupWin.focus();
+        }
+    }
+    catch (err) {
         popupWin = window.open(url, "popupWin", "width=1000,height=700");
-    } else popupWin.focus();
+    }
 }
 
 //Validate the request code
