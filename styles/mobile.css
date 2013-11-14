@@ -29,7 +29,7 @@
                                                                           divParcelDataScrollContainer,divFeatureDataScrollbarContainer,divNeighborhoodContainer,
                                                                           divBroadbandContainer,divParcelScrollContent,divNeighborhoodContent,divBroadbandContent,
                                                                           divFeatureDataScrollbarContent,divInfoWindowContainer .content}/*
-/* 5.  Set the styles for tab container         - { Style(s) to look for: mblTabButton,mblTabPanelHeader .mblTabButton.mblTabButtonSelected}*/
+/* 5.  Set the styles for tab container         - { Style(s) to look for: mblTabBarButton,mblTabPanelHeader .mblTabBarButton.mblTabBarButtonSelected}*/
 /* 6.  Set the styles for esri slider           - { Style(s) to look for: esriSimpleSlider}*/
 /* 7.  Set the styles for basemap               - { Style(s) to look for: basemapThumbnail,divLayerContainer}*/
 /* 8.  Set the styles for share container       - { Style(s) to look for: divShareContainer}*/
@@ -115,7 +115,7 @@ html, body, .textarea
 
 .divAddressResultContainer
 {
-    margin: 5px -7px 0px 10px;
+    margin: 5px -7px 0px 0px;
 }
 
 .txtBox, .txtAddress
@@ -223,7 +223,7 @@ html, body, .textarea
 
 /*Styles for tab container*/
 
-.mblTabButton
+.mblTabBarButton
 {
     border-top-style: none;
     border-bottom-style: none;
@@ -231,7 +231,7 @@ html, body, .textarea
     padding: 0px 0px 0px 4px !important;
 }
 
-.mblTabPanelHeader .mblTabButton.mblTabButtonSelected
+.mblTabPanelHeader .mblTabBarButton.mblTabBarButtonSelected
 {
     height: 28px;
 }

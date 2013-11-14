@@ -26,7 +26,7 @@
                                                                           divParcelDataScrollContainer,divFeatureDataScrollbarContainer,divBroadbandContainer,
                                                                          .divNeighborhoodContainer,divParcelScrollContent, .divNeighborhoodContent,
                                                                          .divBroadbandContent,divFeatureDataScrollbarContent}*/
-/* 5.  Set styles for tab container              - { Style(s) to look for: mblTabButton}*/
+/* 5.  Set styles for tab container              - { Style(s) to look for: mblTabBarButton}*/
 /* 6.  Set styles for esri slider                - { Style(s) to look for: esriSimpleSlider}*/
 /* 7.  Set styles for basemap                    - { Style(s) to look for: basemapThumbnail,baseMapContainerNode,divLayerContainer}*/
 
@@ -168,7 +168,7 @@ font-size:14px !important;
 
 .divParcelDataScrollContainer
 {
-    height: 180px;
+    height: 170px;
     position: relative;
     width: 325px;
 }
@@ -180,14 +180,14 @@ font-size:14px !important;
 }
 .divBroadbandContainer, .divNeighborhoodContainer
 {
-    height: 180px;
+    height: 170px;
     position: relative;
     width: 325px;
 }
 
 .divParcelScrollContent, .divNeighborhoodContent, .divBroadbandContent
 {
-    height: 180px;
+    height: 170px;
     position: relative;
     width: 325px;
     overflow: hidden;
@@ -209,10 +209,9 @@ font-size:14px !important;
 
 /*Styles for tab container*/
 
-.mblTabButton
+.mblTabBarButton
 {
-    /*width: 95px;*/
-    width: 105px; /*  min-width: 95px;*/
+    width: 105px;
     min-width: 80px;
     max-width: 195px;
     border-top-style: none;
