@@ -1400,7 +1400,6 @@ function CallParcelGPService(parcelId, reportType) {
     if (!(broadbandInfo[0])) {
         HideProgressIndicator();
         dojo.byId("txtValidationCode").value = "";
-        alert(messages.getElementsByTagName("unableToCreatePDF")[0].childNodes[0].nodeValue);
         return;
     }
 
@@ -1612,7 +1611,7 @@ function startDrawingFeedback(btnDrawFeedback) {
 function finishDrawingFeedback(geometry) {
     setTimeout(function () {
         draw = false;
-    }, 100);
+    }, 500);
     tb.deactivate();
     feedbackItem = new esri.Graphic(geometry, polygonFillSymbol, null, null);
     map.getLayer(tempLayerId).add(feedbackItem);
@@ -1888,6 +1887,7 @@ function IsNumber(number) {
 
 //Validate data the submit details
 function ValidateData() {
+    var isAndroid = window.navigator.userAgent.indexOf("Android") >= 0;
     dojo.byId("spanServiceErrorMessage").style.display = "none";
     if (dojo.byId("txtSelectedRequest").value.trim() == "") {
         ShowSpanErrorMessage("spanServiceErrorMessage", messages.getElementsByTagName("selectFeedbackType")[0].childNodes[0].nodeValue);
@@ -1900,31 +1900,41 @@ function ValidateData() {
     }
 
     if (dojo.byId('txtComment').value.trim() == "") {
-        dojo.byId('txtComment').focus();
+        if (!(isAndroid && isTablet && window.matchMedia("(orientation: landscape)").matches)) {
+            dojo.byId('txtComment').focus();
+        }
         ShowSpanErrorMessage("spanServiceErrorMessage", messages.getElementsByTagName("enterComments")[0].childNodes[0].nodeValue);
         return false;
     }
     if (dojo.byId('txtComment').value.trim().length > 0 && dojo.byId('txtComment').value.trim().length > 255) {
-        dojo.byId('txtComment').focus();
+        if (!(isAndroid && isTablet && window.matchMedia("(orientation: landscape)").matches)) {
+            dojo.byId('txtComment').focus();
+        }
         ShowSpanErrorMessage("spanServiceErrorMessage", messages.getElementsByTagName("commentsExceeds")[0].childNodes[0].nodeValue);
         return false;
     }
 
     if (dojo.byId('txtName').value.trim().length > 0 && !IsName(dojo.byId('txtName').value.trim())) {
-        dojo.byId('txtName').focus();
+        if (!(isAndroid && isTablet && window.matchMedia("(orientation: landscape)").matches)) {
+            dojo.byId('txtName').focus();
+        }
         ShowSpanErrorMessage("spanServiceErrorMessage", messages.getElementsByTagName("nameProvisions")[0].childNodes[0].nodeValue);
         return false;
     }
 
 
     if (dojo.byId('txtPhone').value.trim().length > 0 && !IsNumber(dojo.byId('txtPhone').value.trim())) {
-        dojo.byId('txtPhone').focus();
+        if (!(isAndroid && isTablet && window.matchMedia("(orientation: landscape)").matches)) {
+            dojo.byId('txtPhone').focus();
+        }
         ShowSpanErrorMessage("spanServiceErrorMessage", messages.getElementsByTagName("enterValidPhone")[0].childNodes[0].nodeValue);
         return false;
     }
 
     if (dojo.byId('txtMail').value.trim().length > 0 && !CheckMailFormat(dojo.byId('txtMail').value)) {
-        dojo.byId('txtMail').focus();
+        if (!(isAndroid && isTablet && window.matchMedia("(orientation: landscape)").matches)) {
+            dojo.byId('txtMail').focus();
+        }
         ShowSpanErrorMessage("spanServiceErrorMessage", messages.getElementsByTagName("enterValidMail")[0].childNodes[0].nodeValue);
         return false;
     }

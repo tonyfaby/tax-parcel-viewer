@@ -46,5 +46,4 @@
     <enterMail>Please enter email address.</enterMail>
     <enterValidMail>Please enter valid email address.</enterValidMail>
     <BroadBandService>BroadBand ${0} are not working due to the USA Federal shutdown.</BroadBandService>
-    <unableToCreatePDF>Unable to create PDF due to BroadBand services are not working.</unableToCreatePDF>
 </Messages>
