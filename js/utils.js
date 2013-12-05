@@ -1349,15 +1349,7 @@ function PopulateBroadBandInformation(broadBandService, location, parcelId, repo
             SetHeightParcelData();
         },
         error: function () {
-            var broadBandServiceName;
-            if (broadBandService.Key == "wirelessServices") {
-                broadBandServiceName = "wireless services";
-            }
-            else {
-                broadBandServiceName = "wireline services";
-            }
             HideProgressIndicator();
-            alert(dojo.string.substitute(messages.getElementsByTagName("BroadBandService")[0].childNodes[0].nodeValue, [broadBandServiceName]));
         }
     });
 }
