@@ -343,109 +343,84 @@ function QueryParcel(layer, parcelId, mapPoint, objectId) {
         var queryTask = new esri.tasks.QueryTask(layer.ServiceURL);
         var query = new esri.tasks.Query();
 
-        query.outSpatialReference = map.spatialReference;
-        query.returnGeometry = false;
-        query.outFields = [layer.OutFields];
-
         if (mapPoint) {
             query.geometry = mapPoint;
+        } else if (objectId) {
+            query.objectIds = [objectId];
         }
-        else {
-            var relationshipId;
-            parcelAttributeID.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g, function (match, key) {
-                relationshipId = key;
-            });
-
-            query.where = relationshipId + " in ('" + parcelId + "')";
-        }
-        query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_INTERSECTS;
-        ShowProgressIndicator();
-        queryTask.execute(query, function (featureSet) {
-            if (featureSet.features.length == 0) {
-                alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
+        query.outSpatialReference = map.spatialReference;
+        query.returnGeometry = true;
+        query.outFields = ["*"];
+        queryTask.execute(query, function (results) {
+            if (results.features.length == 0) {
                 HideProgressIndicator();
+                RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
+                RemoveChildren(dojo.byId("tblAddressResults"));
+                alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
                 return;
             }
-            var query1 = new esri.tasks.Query();
-            query1.outSpatialReference = map.spatialReference;
-            query1.where = dojo.string.substitute(layer.LocateParcelQuery, [dojo.string.substitute(parcelAttributeID, featureSet.features[0].attributes)]);
-            query1.returnGeometry = true;
-            query1.outFields = ["*"];
-            queryTask.execute(query1, function (results) {
-                if (results.features.length == 0) {
+
+            if (!mapPoint) {
+                var polygon = results.features[0].geometry;
+                var mapPoint = polygon.getExtent().getCenter();
+                if (!polygon.contains(mapPoint)) {
+                    mapPoint = polygon.getPoint(0, 0);
+                }
+            }
+
+            if (!isMobileDevice) {
+                if (results.features.length == 1) {
+                    dojo.byId("tdList").style.display = "none";
+                    AddParcelToMap(results.features[0], mapPoint);
+                    PopulateParcelInformation(mapPoint, results.features[0], results.features.length, results.features[0].geometry);
+                } else {
+                    AddParcelToMap(results.features[0], mapPoint);
+                    ShowParcelList(mapPoint, results.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
+                    dojo.byId("tdList").onclick = function () {
+                        ShowParcelList(mapPoint, results.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
+                    }
+                }
+            } else {
+                if (isMobileDevice) {
                     HideProgressIndicator();
-                    RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
-                    RemoveChildren(dojo.byId("tblAddressResults"));
-                    alert(messages.getElementsByTagName("unableToLocateParcel")[0].childNodes[0].nodeValue);
-                    return;
-                }
+                    map.infoWindow.setTitle("");
+                    map.infoWindow.setContent("");
+                    setTimeout(function () {
+                        var screenPoint;
+                        selectedGraphic = mapPoint;
+                        screenPoint = map.toScreen(mapPoint);
+                        screenPoint.y = map.height - screenPoint.y;
+                        map.infoWindow.resize(225, 65);
+                        map.infoWindow.show(screenPoint);
+                        if (results.features.length == 1) {
+                            for (var i in results.features[0].attributes) {
+                                if (results.features[0].attributes.hasOwnProperty(i)) {
+                                    if (!results.features[0].attributes[i]) {
+                                        results.features[0].attributes[i] = showNullValueAs;
+                                    }
+                                }
+                            }
 
-                if (!mapPoint) {
-                    var polygon = results.features[0].geometry;
-                    var mapPoint = polygon.getExtent().getCenter();
-                    if (!polygon.contains(mapPoint)) {
-                        mapPoint = polygon.getPoint(0, 0);
-                    }
-                }
-
-                if (!isMobileDevice) {
-                    if (featureSet.features.length == 1) {
-                        dojo.byId("tdList").style.display = "none";
-                        AddParcelToMap(results.features[0], mapPoint);
-                        PopulateParcelInformation(mapPoint, results.features[0], results.features.length, results.features[0].geometry);
-                    }
-                    else {
-                        AddParcelToMap(results.features[0], mapPoint);
-                        ShowParcelList(mapPoint, featureSet.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
-                        dojo.byId("tdList").onclick = function () {
-                            ShowParcelList(mapPoint, featureSet.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
+                            map.infoWindow.setTitle(dojo.string.substitute(infoWindowHeader, results.features[0].attributes).trimString(20));
+                            map.infoWindow.setContent(dojo.string.substitute(infoWindowContent, results.features[0].attributes));
+                        } else {
+                            map.infoWindow.setTitle(dojo.string.substitute(results.features.length + " Features found"));
                         }
-                    }
-                }
-                else {
-                    if (isMobileDevice) {
-                        HideProgressIndicator();
-                        map.infoWindow.setTitle("");
-                        map.infoWindow.setContent("");
-                        setTimeout(function () {
-                            var screenPoint;
-                            selectedGraphic = mapPoint;
-                            screenPoint = map.toScreen(mapPoint);
-                            screenPoint.y = map.height - screenPoint.y;
-                            map.infoWindow.resize(225, 65);
-                            map.infoWindow.show(screenPoint);
-                            if (featureSet.features.length == 1) {
-                                for (var i in results.features[0].attributes) {
-                                    if (results.features[0].attributes.hasOwnProperty(i)) {
-                                        if (!results.features[0].attributes[i]) {
-                                            results.features[0].attributes[i] = showNullValueAs;
-                                        }
-                                    }
+                        AddParcelToMap(results.features[0], mapPoint);
+                        dojo.connect(map.infoWindow.imgDetailsInstance(), "onclick", function () {
+                            if (results.features.length == 1) {
+                                ShowProgressIndicator();
+                                PopulateParcelInformation(mapPoint, results.features[0], results.features.length, results.features[0].geometry);
+                            } else {
+                                ShowParcelList(mapPoint, results.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
+                                dojo.byId("tdList").onclick = function () {
+                                    ShowParcelList(mapPoint, results.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
                                 }
-
-                                map.infoWindow.setTitle(dojo.string.substitute(infoWindowHeader, results.features[0].attributes).trimString(20));
-                                map.infoWindow.setContent(dojo.string.substitute(infoWindowContent, results.features[0].attributes));
                             }
-                            else {
-                                map.infoWindow.setTitle(dojo.string.substitute(featureSet.features.length + " Features found"));
-                            }
-                            AddParcelToMap(results.features[0], mapPoint);
-                            dojo.connect(map.infoWindow.imgDetailsInstance(), "onclick", function () {
-                                if (featureSet.features.length == 1) {
-                                    ShowProgressIndicator();
-                                    PopulateParcelInformation(mapPoint, results.features[0], results.features.length, results.features[0].geometry);
-                                }
-                                else {
-                                    ShowParcelList(mapPoint, featureSet.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
-                                    dojo.byId("tdList").onclick = function () {
-                                        ShowParcelList(mapPoint, featureSet.features, results.features[0].geometry, queryTask, layer.LocateParcelQuery);
-                                    }
-                                }
-                            });
                         });
-                    }
+                    });
                 }
-            });
+            }
         }, function (err) {
             HideProgressIndicator();
             RemoveScrollBar(dojo.byId("divAddressScrollContainer"));
@@ -515,21 +490,18 @@ function ShowParcelList(mapPoint, featureSet, geometry, queryTask, whereConditio
         td.style.cursor = "pointer";
         td1.style.cursor = "pointer";
 
-        tr.onclick = function () {
-            var query1 = new esri.tasks.Query();
-            query1.outSpatialReference = map.spatialReference;
-            query1.where = dojo.string.substitute(whereCondition, [dojo.string.substitute(parcelAttributeID, featureSet[this.sectionRowIndex].attributes)]);
-            query1.returnGeometry = true;
-            query1.outFields = ["*"];
-            ShowProgressIndicator();
-            queryTask.execute(query1, function (results) {
+        // Create a closure to hold onto the feature for the click handler
+        function getHandler(i) {
+            return function () {
                 tr.className = "selectedAddress";
                 if (isMobileDevice) {
                     HideAddressContainer();
                 }
-                PopulateParcelInformation(mapPoint, results.features[0], featureSet.length, geometry);
-            });
+                PopulateParcelInformation(mapPoint, featureSet[i], 1, featureSet[i].geometry);
+            };
         }
+        tr.onclick = getHandler(i);
+
         tr.appendChild(td);
         tr.appendChild(td1);
         HideProgressIndicator();
