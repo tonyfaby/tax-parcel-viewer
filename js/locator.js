@@ -497,7 +497,7 @@ function ShowParcelList(mapPoint, featureSet, geometry, queryTask, whereConditio
                 if (isMobileDevice) {
                     HideAddressContainer();
                 }
-                PopulateParcelInformation(mapPoint, featureSet[i], 1, featureSet[i].geometry);
+                PopulateParcelInformation(mapPoint, featureSet[i], featureSet.length, featureSet[i].geometry);
             };
         }
         tr.onclick = getHandler(i);
