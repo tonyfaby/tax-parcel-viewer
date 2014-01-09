@@ -322,7 +322,15 @@ function LocateParcel(parcelId, mapPoint, objectId) {
     dojo.query('.selectedAddress', dojo.byId("tblAddressResults")).forEach(function (node, idx, arr) {
         node.bgColor = "";
     });
-    LocateParcelonMap(parcelId, mapPoint, objectId)
+    dojo.query(".mblTabBarButton").forEach(function (node) {
+        if (node.textContent.trim() == "Property") {
+            dojo.addClass(node, "mblTabBarButtonSelected");
+        }
+        else {
+            dojo.removeClass(node, "mblTabBarButtonSelected");
+        }
+    });
+    LocateParcelonMap(parcelId, mapPoint, objectId);
 }
 
 //Locate parcel on map
@@ -630,7 +638,7 @@ function ShowParcelInfoWindow(attributes, mapPoint, parcelId) {
                             td1.innerHTML = showNullValueAs;
                         }
                         else if (parcelInfoWindowFields[index].DataType == "double") {
-                            var formattedValue = dojo.number.format(value, { pattern: "#,##0.##" });
+                        var formattedValue = dojo.number.format(value, { places: 2 });
                             td1.innerHTML = currency + " " + formattedValue;
                         }
                         else {

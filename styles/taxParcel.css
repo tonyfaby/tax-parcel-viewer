@@ -921,3 +921,11 @@ a:visited
     cursor: default;
 }
 
+
+/* Additional Styles */
+.divLayers
+{
+        height:65px;
+        width:93%;
+        overflow:hidden;
+}

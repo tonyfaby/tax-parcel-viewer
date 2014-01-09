@@ -159,6 +159,9 @@ function ShowBaseMaps() {
         }
         dojo.replaceClass("divLayerContainer", "showContainerHeight", "hideContainerHeight");
     }
+    setTimeout(function () {
+        CreateScrollbar(dojo.byId('divScrollContent'), dojo.byId('divLayers'));
+    }, 300);
 }
 
 //Get current map Extent
@@ -1115,7 +1118,6 @@ function QueryLayer(node, mapPoint) {
         RemoveChildren(dojo.byId('divFeatureDataScrollbarContent'));
         var table = document.createElement("table");
         table.style.width = "95%";
-        table.style.height = "100%";
         table.style.textAlign = "left";
         dojo.byId("divFeatureDataScrollbarContent").appendChild(table);
         var tbody = document.createElement("tbody");
@@ -1142,7 +1144,7 @@ function QueryLayer(node, mapPoint) {
                 td1.innerHTML = dojo.date.locale.format(date.utcTimestampFromMs(utcMilliseconds), { datePattern: datePattern, selector: "date" });
             }
             else if (layerInfo.Fields[index].DataType == "double") {
-                var formattedValue = dojo.number.format(value, { pattern: "#,##0.##" });
+                var formattedValue = dojo.number.format(value, { places: 2 });
                 td1.innerHTML = currency + " " + formattedValue;
             }
             else {
@@ -1288,6 +1290,7 @@ function ShowPropertyOnStart() {
 
 //Populate broadband information
 function PopulateBroadBandInformation(broadBandService, location, parcelId, reportType, PDF) {
+    var broadBandDefered = new dojo.Deferred();
     RemoveChildren(dojo.byId('divBroadbandContent'));
     var url = dojo.string.substitute(broadBandService.ServiceURL, location);
     dojo.io.script.get({
@@ -1301,11 +1304,10 @@ function PopulateBroadBandInformation(broadBandService, location, parcelId, repo
                 if (results.length > 0) {
                     var resultArray = [];
                     for (var i = 0; i < results.length; i++) {
-                        resultArray.push(results[i].holdingCompanyName + "$" + downloadSpeed[results[i].technologies[0].maximumAdvertisedDownloadSpeed]);
+                        resultArray.push(results[i].holdingCompanyName + "^" + downloadSpeed[results[i].technologies[0].maximumAdvertisedDownloadSpeed]);
                     }
                     pdfData[parcelId][reportType]["BroadbandInfo"][broadBandService.Key] = resultArray.join("#");
                 }
-                ExecuteParcelGPService(parcelId, reportType);
             }
             var hasChildren = dojo.byId("divBroadbandContent").hasChildNodes();
             if (!PDF) {
@@ -1347,11 +1349,14 @@ function PopulateBroadBandInformation(broadBandService, location, parcelId, repo
                 trData.appendChild(tdSpeed);
             }
             SetHeightParcelData();
+            broadBandDefered.resolve();
         },
         error: function () {
             HideProgressIndicator();
+            broadBandDefered.resolve();
         }
     });
+    return broadBandDefered;
 }
 
 var recordCounter = 0;
@@ -1385,15 +1390,15 @@ function CallParcelGPService(parcelId, reportType) {
     ShowProgressIndicator();
     var broadbandInfo = [];
     for (var i in broadBandService) {
-        broadbandInfo.push(pdfData[parcelId][reportType]["BroadbandInfo"][broadBandService[i].Key]);
+        if (pdfData[parcelId][reportType]["BroadbandInfo"][broadBandService[i].Key]) {
+            broadbandInfo.push(pdfData[parcelId][reportType]["BroadbandInfo"][broadBandService[i].Key]);
+        }
     }
+    var currentBroadbandInfo = broadbandInfo.join("#");
+    var broadbandInfoCount = currentBroadbandInfo.split("#").length;
+    currentBroadbandInfo = currentBroadbandInfo;
     var mapExtent = pdfData[parcelId][reportType]["mapExtent"];
-    var reportData = pdfData[parcelId][reportType]["AttributeInfo"] + "~" + pdfData[parcelId][reportType]["NeighbourhoodInfo"] + "~" + broadbandInfo.join("#");
-    if (!(broadbandInfo[0])) {
-        HideProgressIndicator();
-        dojo.byId("txtValidationCode").value = "";
-        return;
-    }
+    var reportData = pdfData[parcelId][reportType]["AttributeInfo"] + "~" + pdfData[parcelId][reportType]["NeighbourhoodInfo"] + "~" + currentBroadbandInfo;
 
     for (var i = 0; i < layers.length; i++) {
         if (layers[i].ParcelQuery) {
@@ -1528,18 +1533,18 @@ function CallParcelGPService(parcelId, reportType) {
         var graphic = pdfData[parcelId][reportType]["Graphic"];
         graphic.setAttributes({ "ID": 1 });
         featureSet.features.push(graphic);
-        esri.config.defaults.io.alwaysUseProxy = true;
-
+        esri.config.defaults.io.alwaysUseProxy = false;
         var params = {
             "Layout": "Landscape8x11",
-            "ReportData": reportData
+            "Report_Data": reportData
         };
-
         reportGPService.submitJob(params, function (jobInfo) {
             recordCounter++;
             if (jobInfo.jobStatus != "esriJobFailed") {
                 reportGPService.getResultData(jobInfo.jobId, "PDF", function (outputFile) {
                     window.open(outputFile.value.url);
+                }, function (err) {
+                    console.log(err.message);
                 });
                 if (noofRecords == recordCounter) {
                     HideProgressIndicator();
@@ -1551,7 +1556,7 @@ function CallParcelGPService(parcelId, reportType) {
             if (status == "esriJobFailed") {
                 HideProgressIndicator();
                 dojo.byId("txtValidationCode").value = "";
-                alert(status);
+                console.log(status);
             }
         }, function (err) {
             recordCounter++;
@@ -1707,31 +1712,41 @@ function CreatePDF(reportType) {
             }
 
             var attributeInfo = [];
-            attributeInfo.push(dojo.string.substitute(infoWindowHeader, feature.attributes));
+            var headerInfo = "Address" + "^" + dojo.string.substitute(infoWindowHeader, feature.attributes);
+            attributeInfo.push(headerInfo);
             for (var index in parcelInfoWindowFields) {
                 if (parcelInfoWindowFields[index].DataType == "double") {
-                    var formattedValue = currency + " " + dojo.number.format(dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes), { pattern: "#,##0.##" });
+                    var formattedValue = parcelInfoWindowFields[index].DisplayText + "^" + currency + " " + dojo.number.format(dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes), { places: 2 });
                     attributeInfo.push(formattedValue);
                 }
                 else {
-                    attributeInfo.push(dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes));
+                    var test = parcelInfoWindowFields[index].DisplayText + "^" + dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes);
+                    attributeInfo.push(test);
                 }
             }
 
-            pdfData[parcelId][reportType]["AttributeInfo"] = attributeInfo.join("^");
+            pdfData[parcelId][reportType]["AttributeInfo"] = attributeInfo.join("#");
+            var alloperationsCompleted = [], broadBandArray = [], neightbourHoodArray = [];
 
             for (var i in neighbourHoodLayerInfo) {
                 if (map.getLayer(neighbourHoodLayerInfo[i].id).maxScale <= mapScale && map.getLayer(neighbourHoodLayerInfo[i].id).minScale >= mapScale) {
-                    PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], feature.geometry.getExtent().getCenter(), dojo.string.substitute(parcelAttributeID, feature.attributes), reportType);
+                    neightbourHoodArray.push(PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], feature.geometry.getExtent().getCenter(), dojo.string.substitute(parcelAttributeID, feature.attributes), reportType));
                 }
             }
-
+            var neighbourHoodListDefered = new dojo.DeferredList(neightbourHoodArray);
+            alloperationsCompleted.push(neighbourHoodListDefered);
             geometryService.project([feature.geometry.getExtent().getCenter()], new esri.SpatialReference({ wkid: 4326 }), function (newPoint) {
                 var point = newPoint[0];
                 var location = { "latitude": point.y, "longitude": point.x };
                 for (var i = 0; i < broadBandService.length; i++) {
-                    PopulateBroadBandInformation(broadBandService[i], location, dojo.string.substitute(parcelAttributeID, feature.attributes), reportType, true);
+                    broadBandArray.push(PopulateBroadBandInformation(broadBandService[i], location, dojo.string.substitute(parcelAttributeID, feature.attributes), reportType, true));
                 }
+                var broadBandListDefered = new dojo.DeferredList(broadBandArray);
+                alloperationsCompleted.push(broadBandListDefered);
+                var allOpertaionsCompleted = new dojo.DeferredList(alloperationsCompleted);
+                allOpertaionsCompleted.then(function () {
+                    ExecuteParcelGPService(parcelId, reportType);
+                });
             });
         }
     }
@@ -1941,6 +1956,7 @@ function ShowSpanErrorMessage(controlId, message) {
 
 //Populate neighborhood data
 function PopulateNeighbourHoodInformation(neighbourHoodLayerInfo, mapPoint, parcelId, reportType) {
+    var neighbourHoodDefered = new dojo.Deferred();
     RemoveChildren(dojo.byId("divChartContent"));
     RemoveChildren(dojo.byId("divLegend"));
     dojo.byId("divChartContainer").style.display = "none";
@@ -1952,8 +1968,7 @@ function PopulateNeighbourHoodInformation(neighbourHoodLayerInfo, mapPoint, parc
             var divTemp = document.createElement("div");
             divTemp.innerHTML = dojo.string.substitute(FixTokens(neighbourHoodLayerInfo.popupInfo.description), featureSet.features[0].attributes);
             pdfData[parcelId][reportType]["NeighbourhoodInfo"] = (document.all) ? divTemp.innerText + "^" + dojo.query("a", divTemp)[0].href : divTemp.textContent + "^" + dojo.query("a", divTemp)[0].href;
-            ExecuteParcelGPService(parcelId, reportType);
-            return;
+            return neighbourHoodDefered.resolve();
         }
         dojo.byId("spanHeader").innerHTML = dojo.string.substitute(FixTokens(neighbourHoodLayerInfo.popupInfo.title), featureSet.features[0].attributes);
         var content = dojo.string.substitute(FixTokens(neighbourHoodLayerInfo.popupInfo.description), featureSet.features[0].attributes);
@@ -1995,7 +2010,11 @@ function PopulateNeighbourHoodInformation(neighbourHoodLayerInfo, mapPoint, parc
                 CreateLegend(jsonValues);
             }
         }
-    });
+    }, function error(err) {
+        console.log(err);
+    }
+    );
+    return neighbourHoodDefered;
 }
 
 //function to fix tokens. Appending $ to the string for dojo.string.replace

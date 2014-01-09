@@ -162,7 +162,7 @@
         </table>
     </div>
     <div id="divLayerContainer" class="hideContainerHeight divLayerContainer">
-        <div id="divLayerContentHolder" class="divLayerContentHolder" style="height: 100%;">
+        <div id="divLayerContentHolder" class="divLayerContentHolder">
             <table>
                 <tr>
                     <td align="center">
@@ -172,17 +172,19 @@
                 </tr>
                 <tr>
                     <td>
-                        <div id="divLayers" class="divLayers">
-                            <table id="tblLayers" style="width: 100%;">
-                                <tr>
-                                    <td style="width: 50px;">
-                                        Layers
-                                    </td>
-                                    <td>
-                                        <hr />
-                                    </td>
-                                </tr>
-                            </table>
+                        <table id="tblLayers" style="width: 100%;">
+                            <tr>
+                                <td style="width: 50px;">
+                                    Layers
+                                </td>
+                                <td>
+                                    <hr />
+                                </td>
+                            </tr>
+                        </table>
+                        <div id="divScrollContent" style="position: relative; overflow: hidden;">
+                            <div id="divLayers" class="divLayers">
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -744,11 +746,11 @@
                             <tr>
                                 <td align="center" id="tdTabBar">
                                     <div id="divTabBar" dojotype="dojox.mobile.TabBar" bartype="segmentedControl">
-                                        <div id="divProperty" dojotype="dojox.mobile.TabBarButton" selected="true" onclick="ShowProperty();">
+                                        <div id="divProperty" dojotype="dojox.mobile.TabBarButton" selected="true" style="outline:none;" onclick="ShowProperty();">
                                             Property</div>
-                                        <div id="divNeighborhood" dojotype="dojox.mobile.TabBarButton" onclick="ShowNeighborhood();">
+                                        <div id="divNeighborhood" dojotype="dojox.mobile.TabBarButton" style="outline:none;" onclick="ShowNeighborhood();">
                                             Neighborhood</div>
-                                        <div dojotype="dojox.mobile.TabBarButton" onclick="ShowBroadband();">
+                                        <div dojotype="dojox.mobile.TabBarButton" style="outline:none;" onclick="ShowBroadband();">
                                             Broadband</div>
                                     </div>
                                 </td>
