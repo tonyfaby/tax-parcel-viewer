@@ -152,16 +152,13 @@ function ShowBaseMaps() {
     }
     else {
         if (isMobileDevice) {
-            dojo.byId('divLayerContainer').style.height = Math.ceil(baseMapLayers.length / 2) * cellHeight + Math.ceil(layers.length / 2) * 50 + "px";
+            dojo.byId('divLayerContainer').style.height = Math.ceil(baseMapLayers.length / 2) * cellHeight + Math.ceil(layers.length) * 50 + "px";
         }
         else {
-            dojo.byId('divLayerContainer').style.height = Math.ceil(baseMapLayers.length / 2) * cellHeight + Math.ceil(layers.length / 2) * 25 + "px";
+            dojo.byId('divLayerContainer').style.height = Math.ceil(baseMapLayers.length / 2) * cellHeight + Math.ceil(layers.length) * 25 + "px";
         }
         dojo.replaceClass("divLayerContainer", "showContainerHeight", "hideContainerHeight");
     }
-    setTimeout(function () {
-        CreateScrollbar(dojo.byId('divScrollContent'), dojo.byId('divLayers'));
-    }, 300);
 }
 
 //Get current map Extent
@@ -1536,7 +1533,7 @@ function CallParcelGPService(parcelId, reportType) {
         esri.config.defaults.io.alwaysUseProxy = false;
         var params = {
             "Layout": "Landscape8x11",
-            "Report_Data": reportData
+            "ReportData": reportData
         };
         reportGPService.submitJob(params, function (jobInfo) {
             recordCounter++;
@@ -1714,14 +1711,20 @@ function CreatePDF(reportType) {
             var attributeInfo = [];
             var headerInfo = "Address" + "^" + dojo.string.substitute(infoWindowHeader, feature.attributes);
             attributeInfo.push(headerInfo);
+            var specialChars = "~`!#%^&*+=-[]\\\';,/{}|\":<>?";
             for (var index in parcelInfoWindowFields) {
+                var displayFieldName = dojo.trim(parcelInfoWindowFields[index].DisplayText);
+                var specialCharInFieldName = displayFieldName[displayFieldName.length - 1];
+                if (dojo.indexOf(specialChars, specialCharInFieldName) != -1) {
+                    var displayFieldName = displayFieldName.substring(0, (displayFieldName.length-1));
+                }
                 if (parcelInfoWindowFields[index].DataType == "double") {
-                    var formattedValue = parcelInfoWindowFields[index].DisplayText + "^" + currency + " " + dojo.number.format(dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes), { places: 2 });
+                    var formattedValue = displayFieldName + "^" + currency + " " + dojo.number.format(dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes), { places: 2 });
                     attributeInfo.push(formattedValue);
                 }
                 else {
-                    var test = parcelInfoWindowFields[index].DisplayText + "^" + dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes);
-                    attributeInfo.push(test);
+                    var parcelValue = displayFieldName + "^" + dojo.string.substitute(parcelInfoWindowFields[index].FieldName, feature.attributes);
+                    attributeInfo.push(parcelValue);
                 }
             }
 

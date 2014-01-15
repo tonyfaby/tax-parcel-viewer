@@ -271,10 +271,6 @@ function init() {
                 }
             }
         }
-        var featureLayerDeferedList = new dojo.DeferredList(featureLayerDeferedArray);
-        featureLayerDeferedList.then(function () {
-            CreateScrollbar(dojo.byId('divScrollContent'), dojo.byId('divLayers'));
-        });
     });
 
     dojo.connect(dojo.byId('help'), "onclick", function () {
@@ -386,15 +382,7 @@ function CreateFeatureLayerCheckbox(featureLayer, query, count, outerTbody) {
         outerTd.appendChild(table);
         return featureLayerDefered.resolve();
 
-        for (var i = (count + 1); i < layers.length; i++) {
-            if (!layers[i].ParcelQuery) {
-                if (!layers[i].isDynamicMapService) {
-                    CreateFeatureLayerCheckbox(layers[i], query, i, outerTbody);
-                    break;
-                }
-            }
-        }
-    }, function (err) {
+  }, function (err) {
         console.log(err.message);
     });
     return featureLayerDefered;
