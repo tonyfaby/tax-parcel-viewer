@@ -4,7 +4,7 @@ The Tax Parcel Viewer is a configuration of ArcGIS Server and a HTML 5 / JavaScr
 
 [Try the Tax Parcel Viewer application](http://localgovtemplates.esri.com/TaxParcelViewer/default.htm)
 
-[![Image of Tax Parcel Viewer application](https://raw.github.com/Esri/tax-parcel-viewer/master/tax-parcel-viewer.png "Tax Parcel Viewer application")](http://localgovtemplates.esri.com/TaxParcelViewer/default.htm)
+[![Image of Tax Parcel Viewer application](tax-parcel-viewer.png "Tax Parcel Viewer application")](http://localgovtemplates.esri.com/TaxParcelViewer/default.htm)
 
 ## Features
 
@@ -80,7 +80,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's
-[LICENSE.txt](https://raw.github.com/Esri/tax-parcel-viewer/master/LICENSE.txt) file.
+[LICENSE.txt](LICENSE.txt) file.
 
 [](Esri Tags: Local-Government Local Government Tax Parcel Viewer)
 [](Esri Language: JavaScript)
