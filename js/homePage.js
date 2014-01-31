@@ -33,6 +33,7 @@ dojo.require('dojox.charting.Chart');
 dojo.require("esri.tasks.gp");
 dojo.require("js.config");
 dojo.require("dojo.number");
+dojo.require("dojo.DeferredList");
 dojo.require("js.date");
 dojo.require("esri.dijit.Print");
 
@@ -82,6 +83,7 @@ var stagedSearch; //variable to store the time limit for search
 var lastSearchTime; //variable to store the time of last searched value
 
 function init() {
+    var featureLayerDeferedArray = [];
     window.onkeydown = function (e) {
         return !((e.keyCode == 9) || (e.keyCode == 13));
     };
@@ -239,7 +241,11 @@ function init() {
     dojo.connect(dojo.byId('txtAddress'), "onblur", ReplaceDefaultText);
 
     dojo.connect(map, "onLoad", function () {
-        MapInitFunction();
+        MapInitFunction().then(function () {
+            setTimeout(function () {
+                HideProgressIndicator();
+            }, 100);
+        });
         var mapExtent = responseObject.DefaultExtent.split(',');
         var extent = GetQuerystring('extent');
         if (extent != "") {
@@ -252,11 +258,16 @@ function init() {
         query.where = "1=1";
         query.outFields = ["*"];
         query.returnGeometry = true;
+        var layerTable = document.createElement("table");
+        layerTable.style.width = "100%";
+        var layerTbody = document.createElement("tbody");
+        layerTbody.id = "outerTbody";
+        layerTable.appendChild(layerTbody);
+        dojo.byId('divLayers').appendChild(layerTable);
         for (var i = 0; i < layers.length; i++) {
             if (!layers[i].ParcelQuery) {
                 if (!layers[i].isDynamicMapService) {
-                    CreateFeatureLayerCheckbox(layers[i], query, i);
-                    break;
+                    featureLayerDeferedArray.push(CreateFeatureLayerCheckbox(layers[i], query, i, dojo.byId('outerTbody')));
                 }
             }
         }
@@ -274,11 +285,12 @@ function init() {
     pdfData.isEmpty = true;
 }
 
-function CreateFeatureLayerCheckbox(featureLayer, query, count) {
+function CreateFeatureLayerCheckbox(featureLayer, query, count, outerTbody) {
     // A MODE_SELECTION FeatureLayer gets stuck in suspended mode at 3.1 if it is created invisible,
     // so we created it visible and then correct the visibility right after we fetch its features
     var featureId = featureLayer.Key;
     var initiallyVisible = featureLayer.isVisible;
+    var featureLayerDefered = new dojo.Deferred();
     map.getLayer(featureLayer.Key).selectFeatures(query, esri.layers.FeatureLayer.SELECTION_NEW, function (features) {
         if(!features || features.length === 0) {
             console.warn(featureId + ": no features found");
@@ -286,6 +298,11 @@ function CreateFeatureLayerCheckbox(featureLayer, query, count) {
         } else {
             console.log(featureId + ": " + features.length + " features found");
         }
+
+        var outerTr = document.createElement("tr");
+        var outerTd = document.createElement("td");
+        outerTbody.appendChild(outerTr);
+        outerTr.appendChild(outerTd);
         var representativeFeature = features[0];
         var graphicsLayer = representativeFeature.getLayer();
         if(!graphicsLayer) {
@@ -337,19 +354,22 @@ function CreateFeatureLayerCheckbox(featureLayer, query, count) {
         tr.appendChild(td);
 
         td = document.createElement("td");
-        var img = document.createElement("img");
-        img.src = graphicsLayer.renderer.getSymbol().url;
-        if (isMobileDevice) {
-            img.style.width = "44px";
-            img.style.height = "44px";
+        // display legend symbol
+        if (graphicsLayer.renderer.symbol && graphicsLayer.renderer.symbol.url) {
+            var img = document.createElement("img");
+            img.src = graphicsLayer.renderer.getSymbol().url;
+            setLegendSize(td, img);
+            tr.appendChild(td);
+        } else if (graphicsLayer.renderer.symbol && graphicsLayer.renderer.symbol.color && graphicsLayer.renderer.symbol.color.toHex()) {
+            var div = document.createElement("div");
+            div.style.backgroundColor = graphicsLayer.renderer.getSymbol().color.toHex();
+            setLegendSize(td, div);
+            tr.appendChild(td);
+        } else {
+            var div = document.createElement("div");
+            setLegendSize(td, div);
+            tr.appendChild(td);
         }
-        else {
-            img.style.width = "20px";
-            img.style.height = "20px";
-        }
-        td.appendChild(img);
-
-        tr.appendChild(td);
 
         td = document.createElement("td");
         for (var t = 0; t < layers.length; t++) {
@@ -359,21 +379,39 @@ function CreateFeatureLayerCheckbox(featureLayer, query, count) {
             }
         }
         tr.appendChild(td);
-        dojo.byId('divLayers').appendChild(table);
-        for (var i = (count + 1); i < layers.length; i++) {
-            if (!layers[i].ParcelQuery) {
-                if (!layers[i].isDynamicMapService) {
-                    CreateFeatureLayerCheckbox(layers[i], query, i);
-                    break;
-                }
-            }
-        }
+        outerTd.appendChild(table);
+        return featureLayerDefered.resolve();
+
+  }, function (err) {
+        console.log(err.message);
     });
+    return featureLayerDefered;
 }
 
+function setLegendSize(container, currentNode) {
+    if (currentNode.tagName && currentNode.tagName.toUpperCase() != "IMG") {
+        if (isMobileDevice) {
+            currentNode.style.margin = "4px";
+            var containerSize = "36px";
+        } else {
+            currentNode.style.margin = "2px";
+            var containerSize = "16px";
+        }
+    } else {
+        if (isMobileDevice) {
+            var containerSize = "44px";
+        } else {
+            var containerSize = "20px";
+        }
+    }
+    currentNode.style.width = containerSize;
+    currentNode.style.height = containerSize;
+    container.appendChild(currentNode);
+}
 
 //Function to create graphics and layers
 function MapInitFunction() {
+    var mapInitFunctionCompleted = new dojo.Deferred();
     window.onresize = function () {
         if (!isMobileDevice) {
             resizeHandler();
@@ -509,5 +547,7 @@ function MapInitFunction() {
         }
         ShowFeatureInfoWindow(evt.mapPoint);
     });
+    mapInitFunctionCompleted.resolve();
+    return mapInitFunctionCompleted;
 }
 dojo.addOnLoad(init);

@@ -239,3 +239,11 @@ html, body
     left: 360px !important;
     top: 70px !important;
 }
+
+/* Additional Styles */
+.divLayers
+{
+        max-height:350px;
+        width:93%;
+        overflow:hidden;
+}

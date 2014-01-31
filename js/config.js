@@ -85,7 +85,7 @@ dojo.declare("js.config", null, {
     BaseMapLayers: [{
         Key: "parcelMap",
         ThumbnailSource: "images/Parcel map.png",
-        Name: "Streets",
+        Name: "Parcel Map",
         MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/ParcelPublicAccessMI/MapServer",
         useForMobileDevice: true
     }, {
@@ -159,7 +159,7 @@ dojo.declare("js.config", null, {
     // GEOPROCESSING SERVICE SETTINGS
     // ------------------------------------------------------------------------------------------------------------------------
     // Set report geoprocessing service URL
-    ReportGPServiceURL: "http://ec2-54-214-169-132.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/TaxParcelReporting/GPServer/TaxParcelReporting",
+    ReportGPServiceURL: "http://203.199.47.114/arcgis/rest/services/TaxParcelViewer/TaxParcelReporting/GPServer/TaxParcelReporting",
 
     //Set URL for the print task
     PrintTaskURL: "http://ec2-54-214-169-132.us-west-2.compute.amazonaws.com:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task/execute",
