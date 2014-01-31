@@ -159,6 +159,9 @@ function ShowBaseMaps() {
         }
         dojo.replaceClass("divLayerContainer", "showContainerHeight", "hideContainerHeight");
     }
+    setTimeout(function () {
+        CreateScrollbar(dojo.byId('divScrollContent'), dojo.byId('divLayers'));
+    }, 300);
 }
 
 //Get current map Extent
@@ -1731,9 +1734,9 @@ function CreatePDF(reportType) {
             pdfData[parcelId][reportType]["AttributeInfo"] = attributeInfo.join("#");
             var alloperationsCompleted = [], broadBandArray = [], neightbourHoodArray = [];
 
-            for (var i in neighbourHoodLayerInfo) {
-                if (map.getLayer(neighbourHoodLayerInfo[i].id).maxScale <= mapScale && map.getLayer(neighbourHoodLayerInfo[i].id).minScale >= mapScale) {
-                    neightbourHoodArray.push(PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[i], feature.geometry.getExtent().getCenter(), dojo.string.substitute(parcelAttributeID, feature.attributes), reportType));
+            for (var k in neighbourHoodLayerInfo) {
+                if (map.getLayer(neighbourHoodLayerInfo[k].id).maxScale <= mapScale && map.getLayer(neighbourHoodLayerInfo[k].id).minScale >= mapScale) {
+                    neightbourHoodArray.push(PopulateNeighbourHoodInformation(neighbourHoodLayerInfo[k], feature.geometry.getExtent().getCenter(), dojo.string.substitute(parcelAttributeID, feature.attributes), reportType));
                 }
             }
             var neighbourHoodListDefered = new dojo.DeferredList(neightbourHoodArray);
