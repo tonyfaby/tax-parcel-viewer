@@ -85,7 +85,7 @@ dojo.declare("js.config", null, {
     BaseMapLayers: [{
         Key: "parcelMap",
         ThumbnailSource: "images/Parcel map.png",
-        Name: "Parcel Map",
+        Name: "Streets",
         MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/ParcelPublicAccessMI/MapServer",
         useForMobileDevice: true
     }, {
