@@ -103,7 +103,7 @@ function init() {
     });
 
 
-    esriConfig.defaults.io.proxyUrl = "proxy.ashx";        //Setting to use proxy file
+    esriConfig.defaults.io.proxyUrl = "proxy/proxy.ashx"; //relative path
     esriConfig.defaults.io.alwaysUseProxy = false;
     esriConfig.defaults.io.timeout = 180000;    //ersi request timeout value
     esriConfig.defaults.io.postLength = 512;

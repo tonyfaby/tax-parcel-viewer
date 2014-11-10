@@ -1,4 +1,4 @@
-﻿/*global */
+﻿/*global dojo */
 /*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true */
 /*
  | Copyright 2012 Esri
@@ -15,6 +15,10 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
+dojo.require("js.commonShare");
+
+var commonShare = null;
+var getTinyUrl = null;
 var isOrientationChanged = false; //variable to store the flag on orientation
 var tinyResponse; //variable to store the response getting from tiny url api
 var tinyUrl; //variable to store the tiny url
@@ -174,6 +178,10 @@ function GetMapExtent() {
 
 //Function to open login page for facebook,tweet,email
 function ShareLink(ext) {
+    if (!commonShare) {
+        commonShare = new js.CommonShare();
+    }
+    
     tinyUrl = null;
     var mapExtent = GetMapExtent();
 
@@ -186,45 +194,24 @@ function ShareLink(ext) {
             }
         }
     }
-    url = dojo.string.substitute(mapSharingOptions.TinyURLServiceURL, [urlStr]);
-
-    dojo.io.script.get({
-        url: url,
-        callbackParamName: "callback",
-        load: function (data) {
-            tinyResponse = data;
-            tinyUrl = data;
-            var attr = mapSharingOptions.TinyURLResponseAttribute.split(".");
-            for (var x = 0; x < attr.length; x++) {
-                tinyUrl = tinyUrl[attr[x]];
-            }
-            if (ext) {
-                if (dojo.coords("divLayerContainer").h > 0) {
-                    dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
-                    dojo.byId('divLayerContainer').style.height = '0px';
-                }
-
-                var cellHeight = (isMobileDevice || isTablet) ? 81 : 60;
-                if (dojo.coords("divShareContainer").h > 0) {
-                    dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
-                    dojo.byId('divShareContainer').style.height = '0px';
-                }
-                else {
-                    dojo.byId('divShareContainer').style.height = cellHeight + "px";
-                    dojo.replaceClass("divShareContainer", "showContainerHeight", "hideContainerHeight");
-                }
-            }
-        },
-        error: function (error) {
-            alert(tinyResponse.error);
+    // Attempt the shrinking of the URL
+    getTinyUrl = commonShare.getTinyLink(urlStr, mapSharingOptions.TinyURLServiceURL);
+    
+    if (ext) {
+        if (dojo.coords("divLayerContainer").h > 0) {
+            dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
+            dojo.byId('divLayerContainer').style.height = '0px';
         }
-    });
-    setTimeout(function () {
-        if (!tinyResponse) {
-            alert(messages.getElementsByTagName("tinyResponseError")[0].childNodes[0].nodeValue);
-            return;
+        var cellHeight = (isMobileDevice || isTablet) ? 81 : 60;
+        if (dojo.coords("divShareContainer").h > 0) {
+            dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
+            dojo.byId('divShareContainer').style.height = '0px';
         }
-    }, 6000);
+        else {
+            dojo.byId('divShareContainer').style.height = cellHeight + "px";
+            dojo.replaceClass("divShareContainer", "showContainerHeight", "hideContainerHeight");
+        }
+        }
 }
 
 //Function to open login page for facebook,tweet,email
@@ -233,23 +220,8 @@ function Share(site) {
         dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
         dojo.byId('divShareContainer').style.height = '0px';
     }
-    if (tinyUrl) {
-        switch (site) {
-            case "facebook":
-                window.open(dojo.string.substitute(mapSharingOptions.FacebookShareURL, [tinyUrl]));
-                break;
-            case "twitter":
-                window.open(dojo.string.substitute(mapSharingOptions.TwitterShareURL, [tinyUrl]));
-                break;
-            case "mail":
-                parent.location = dojo.string.substitute(mapSharingOptions.ShareByMailLink, [tinyUrl]);
-                break;
-        }
-    }
-    else {
-        alert(messages.getElementsByTagName("tinyURLEngine")[0].childNodes[0].nodeValue);
-        return;
-    }
+    // Do the share
+    commonShare.share(getTinyUrl, mapSharingOptions, site);
 }
 
 //Hide splash screen container
