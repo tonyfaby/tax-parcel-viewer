@@ -1,5 +1,6 @@
-﻿/** @license
- | Version 10.2
+﻿/*global */
+/*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true */
+/*
  | Copyright 2013 Esri
  |
  | Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +103,7 @@ function init() {
     });
 
 
-    esriConfig.defaults.io.proxyUrl = "proxy.ashx";        //Setting to use proxy file
+    esriConfig.defaults.io.proxyUrl = "proxy/proxy.ashx"; //relative path
     esriConfig.defaults.io.alwaysUseProxy = false;
     esriConfig.defaults.io.timeout = 180000;    //ersi request timeout value
     esriConfig.defaults.io.postLength = 512;

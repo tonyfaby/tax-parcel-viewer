@@ -1,5 +1,6 @@
-﻿/** @license
- | Version 10.2
+﻿/*global dojo */
+/*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true */
+/*
  | Copyright 2012 Esri
  |
  | Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +15,10 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
+dojo.require("js.commonShare");
+
+var commonShare = null;
+var getTinyUrl = null;
 var isOrientationChanged = false; //variable to store the flag on orientation
 var tinyResponse; //variable to store the response getting from tiny url api
 var tinyUrl; //variable to store the tiny url
@@ -173,6 +178,10 @@ function GetMapExtent() {
 
 //Function to open login page for facebook,tweet,email
 function ShareLink(ext) {
+    if (!commonShare) {
+        commonShare = new js.CommonShare();
+    }
+    
     tinyUrl = null;
     var mapExtent = GetMapExtent();
 
@@ -185,45 +194,24 @@ function ShareLink(ext) {
             }
         }
     }
-    url = dojo.string.substitute(mapSharingOptions.TinyURLServiceURL, [urlStr]);
-
-    dojo.io.script.get({
-        url: url,
-        callbackParamName: "callback",
-        load: function (data) {
-            tinyResponse = data;
-            tinyUrl = data;
-            var attr = mapSharingOptions.TinyURLResponseAttribute.split(".");
-            for (var x = 0; x < attr.length; x++) {
-                tinyUrl = tinyUrl[attr[x]];
-            }
-            if (ext) {
-                if (dojo.coords("divLayerContainer").h > 0) {
-                    dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
-                    dojo.byId('divLayerContainer').style.height = '0px';
-                }
-
-                var cellHeight = (isMobileDevice || isTablet) ? 81 : 60;
-                if (dojo.coords("divShareContainer").h > 0) {
-                    dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
-                    dojo.byId('divShareContainer').style.height = '0px';
-                }
-                else {
-                    dojo.byId('divShareContainer').style.height = cellHeight + "px";
-                    dojo.replaceClass("divShareContainer", "showContainerHeight", "hideContainerHeight");
-                }
-            }
-        },
-        error: function (error) {
-            alert(tinyResponse.error);
+    // Attempt the shrinking of the URL
+    getTinyUrl = commonShare.getTinyLink(urlStr, mapSharingOptions.TinyURLServiceURL);
+    
+    if (ext) {
+        if (dojo.coords("divLayerContainer").h > 0) {
+            dojo.replaceClass("divLayerContainer", "hideContainerHeight", "showContainerHeight");
+            dojo.byId('divLayerContainer').style.height = '0px';
         }
-    });
-    setTimeout(function () {
-        if (!tinyResponse) {
-            alert(messages.getElementsByTagName("tinyResponseError")[0].childNodes[0].nodeValue);
-            return;
+        var cellHeight = (isMobileDevice || isTablet) ? 81 : 60;
+        if (dojo.coords("divShareContainer").h > 0) {
+            dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
+            dojo.byId('divShareContainer').style.height = '0px';
         }
-    }, 6000);
+        else {
+            dojo.byId('divShareContainer').style.height = cellHeight + "px";
+            dojo.replaceClass("divShareContainer", "showContainerHeight", "hideContainerHeight");
+        }
+        }
 }
 
 //Function to open login page for facebook,tweet,email
@@ -232,23 +220,8 @@ function Share(site) {
         dojo.replaceClass("divShareContainer", "hideContainerHeight", "showContainerHeight");
         dojo.byId('divShareContainer').style.height = '0px';
     }
-    if (tinyUrl) {
-        switch (site) {
-            case "facebook":
-                window.open(dojo.string.substitute(mapSharingOptions.FacebookShareURL, [tinyUrl]));
-                break;
-            case "twitter":
-                window.open(dojo.string.substitute(mapSharingOptions.TwitterShareURL, [tinyUrl]));
-                break;
-            case "mail":
-                parent.location = dojo.string.substitute(mapSharingOptions.ShareByMailLink, [tinyUrl]);
-                break;
-        }
-    }
-    else {
-        alert(messages.getElementsByTagName("tinyURLEngine")[0].childNodes[0].nodeValue);
-        return;
-    }
+    // Do the share
+    commonShare.share(getTinyUrl, mapSharingOptions, site);
 }
 
 //Hide splash screen container
@@ -560,7 +533,6 @@ function CreateScrollbar(container, content) {
     };
 
     var startPos;
-    var scrollingTimer;
 
     dojo.connect(container, "touchstart", function (evt) {
         touchStartHandler(evt);
@@ -570,50 +542,42 @@ function CreateScrollbar(container, content) {
         touchMoveHandler(evt);
     });
 
-    dojo.connect(container, "touchend", function (evt) {
-        touchEndHandler(evt);
+    dojo.connect(content, "touchstart", function (evt) {
+        // Needed for iOS 8
+    });
+
+    dojo.connect(content, "touchmove", function (evt) {
+        // Needed for iOS 8
     });
 
     //Handlers for Touch Events
+
     function touchStartHandler(e) {
         startPos = e.touches[0].pageY;
     }
 
     function touchMoveHandler(e) {
         var touch = e.touches[0];
-        e.cancelBubble = true;
+        if (e.cancelBubble) e.cancelBubble = true;
         if (e.stopPropagation) e.stopPropagation();
         e.preventDefault();
 
-        pxTop = scrollbar_handle.offsetTop;
-        var y;
-        if (startPos > touch.pageY) {
-            y = pxTop + 10;
-        }
-        else {
-            y = pxTop - 10;
-        }
+        var change = startPos - touch.pageY;
+        if (change !== 0) {
+            pxTop = scrollbar_handle.offsetTop;
+            var y = pxTop + change;
 
-        //setting scrollbar handel
-        if (y > yMax) y = yMax // Limit vertical movement
-        if (y < 0) y = 0 // Limit vertical movement
-        scrollbar_handle.style.top = y + "px";
+            //setting scrollbar handle
+            if (y > yMax) y = yMax // Limit vertical movement
+            if (y < 0) y = 0 // Limit vertical movement
+            scrollbar_handle.style.top = y + "px";
 
-        if (y == 0) {
-            content.scrollTop = 0;
-        }
-        else {
             //setting content position
             content.scrollTop = Math.round(scrollbar_handle.offsetTop / yMax * (content.scrollHeight - content.offsetHeight));
-        }
-        scrolling = true;
-        startPos = touch.pageY;
-    }
 
-    function touchEndHandler(e) {
-        scrollingTimer = setTimeout(function () { clearTimeout(scrollingTimer); scrolling = false; }, 100);
+            startPos = touch.pageY;
+        }
     }
-    //touch scrollbar end
 }
 
 //Remove child elements from a container

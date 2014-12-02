@@ -1,6 +1,6 @@
 ﻿/*global dojo */
-/** @license
- | Version 10.2
+/*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true */
+/*
  | Copyright 2012 Esri
  |
  | Licensed under the Apache License, Version 2.0 (the "License");
@@ -432,8 +432,7 @@ dojo.declare("js.config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
     // Set URL for TinyURL service, and URLs for social media
     MapSharingOptions: {
-        TinyURLServiceURL: "http://api.bit.ly/v3/shorten?login=esri&apiKey=R_65fd9891cd882e2a96b99d4bda1be00e&uri=${0}&format=json",
-        TinyURLResponseAttribute: "data.url",
+        TinyURLServiceURL: "https://api-ssl.bitly.com/v3/shorten?longUrl=${0}",
         FacebookShareURL: "http://www.facebook.com/sharer.php?u=${0}&t=Tax%20Viewer%20Map",
         TwitterShareURL: "http://mobile.twitter.com/compose/tweet?status=Tax%20Viewer%20Map ${0}",
         ShareByMailLink: "mailto:%20?subject=Tax%20Viewer%20Map&body=${0}"
