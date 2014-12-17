@@ -92,7 +92,7 @@ dojo.declare("js.config", null, {
         Key: "imageryMap",
         ThumbnailSource: "images/imageryHybrid.png",
         Name: "Imagery",
-        MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/ImageryReferenceOverlay/MapServer"
+        MapURL: "http://tryitlive.arcgis.com/arcgis/rest/services/ImageryHybrid/MapServer"
     }],
 
     // Initial map extent. Use comma (,) to separate values and don't delete the last comma
@@ -139,7 +139,7 @@ dojo.declare("js.config", null, {
     // ------------------------------------------------------------------------------------------------------------------------
 
     // Set default address to search
-    LocatorDefaultAddress: "4014 Overlea Ct",
+    LocatorDefaultAddress: "1215 Hidden Springs",
 
     //Set the image for geolocated point
     GeolocatedImage: "images/RedPushPin.png",
